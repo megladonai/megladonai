@@ -172,7 +172,7 @@
   <section class="tool-hero">
     <span class="eyebrow mono">IMAGE TOOL</span>
     <h1>Background Remover</h1>
-    <p>Upload a photo, get a clean transparent PNG back — powered by an on-device AI model.</p>
+    <p>Upload a photo, get a clean transparent PNG back — instantly, right in your browser.</p>
   </section>
 
   <div class="tool-wrap">
@@ -186,15 +186,14 @@
 
     <div class="process-card" id="processCard">
       <div class="sonar-loader"><div class="dot"></div></div>
-      <h3>Removing background...</h3>
-      <p>First run downloads a small AI model — this takes longer the first time, then gets faster.</p>
-      <div class="process-stage mono" id="processStage">LOADING MODEL</div>
+      <h3>Reading your image...</h3>
+      <p>Detecting the background color and preparing your result.</p>
     </div>
 
     <div class="error-card" id="errorCard">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
       <h3 id="errorTitle">Something went wrong</h3>
-      <p id="errorMsg">Please try a different image, or check your internet connection (the AI model needs to download once).</p>
+      <p id="errorMsg">Please try a different image, or make sure it's a valid JPG, PNG, or WEBP file.</p>
       <button class="btn-ghost" id="errorResetBtn" style="margin-top:16px;">Try another image</button>
     </div>
 
