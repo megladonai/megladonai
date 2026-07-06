@@ -203,6 +203,14 @@
         <span class="compare-label">Transparent result</span>
         <img id="resultImg" alt="Background removed result">
       </div>
+      <div class="control-panel" style="background:var(--panel); border:1px solid var(--panel-border); border-radius:14px; padding:20px; margin-bottom:20px; text-align:left;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+          <label style="font-family:'Quicksand',sans-serif; font-weight:600; font-size:0.9rem;">Sensitivity</label>
+          <span class="mono" id="sensVal" style="color:var(--teal); font-size:0.85rem;">40</span>
+        </div>
+        <input type="range" id="sensSlider" min="5" max="100" value="40" style="width:100%;">
+        <p style="font-family:'Quicksand',sans-serif; color:var(--text-muted); font-size:0.78rem; margin-top:10px;">Increase if background bits remain, decrease if part of your subject disappears.</p>
+      </div>
       <div class="action-row">
         <button class="btn-primary" id="downloadBtn">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
@@ -218,8 +226,8 @@
     <h2>How it works</h2>
     <div class="how-steps">
       <div class="how-step"><div class="num">1</div><h4>Upload</h4><p>Drag your photo in or select it from your device.</p></div>
-      <div class="how-step"><div class="num">2</div><h4>AI removes it</h4><p>An on-device model detects the subject and clears the background.</p></div>
-      <div class="how-step"><div class="num">3</div><h4>Download</h4><p>Save a clean transparent PNG, ready to use anywhere.</p></div>
+      <div class="how-step"><div class="num">2</div><h4>Auto-detect</h4><p>We detect the background color from the edges and clear it out.</p></div>
+      <div class="how-step"><div class="num">3</div><h4>Fine-tune & download</h4><p>Adjust sensitivity if needed, then save a clean transparent PNG.</p></div>
     </div>
   </section>
 
@@ -231,15 +239,15 @@
     </div>
     <div class="faq-item">
       <button class="faq-q">Are my photos uploaded to a server? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
-      <div class="faq-a"><p>No — the AI model runs entirely in your browser. Your photo never leaves your device.</p></div>
+      <div class="faq-a"><p>No — everything is processed on your own device using your browser. Nothing is ever uploaded anywhere.</p></div>
     </div>
     <div class="faq-item">
-      <button class="faq-q">Why is the first image slow? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
-      <div class="faq-a"><p>The first run downloads a small AI model to your browser. After that, it's cached and much faster.</p></div>
+      <button class="faq-q">What images work best? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+      <div class="faq-a"><p>Logos, product photos, ID photos, and any image with a fairly plain, solid-colored background work great. Busy, cluttered backgrounds are harder to remove cleanly.</p></div>
     </div>
     <div class="faq-item">
-      <button class="faq-q">What image types work best? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
-      <div class="faq-a"><p>Photos with a clear subject (people, products, animals) against a distinct background work best.</p></div>
+      <button class="faq-q">The result isn't clean — what do I do? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+      <div class="faq-a"><p>Use the Sensitivity slider on the result screen — increase it if background patches remain, or decrease it if part of your subject is disappearing.</p></div>
     </div>
   </section>
 
@@ -263,9 +271,7 @@
 
 <div class="toast" id="toast">Link copied to clipboard</div>
 
-<script type="module">
-  import { removeBackground } from 'https://esm.sh/@imgly/background-removal@1.5.5';
-
+<script>
   const hamburgerBtn = document.getElementById('hamburgerBtn');
   const closeMenuBtn = document.getElementById('closeMenuBtn');
   const mobileMenu = document.getElementById('mobileMenu');
@@ -278,11 +284,11 @@
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 2200);
   }
-  window.shareTool = async function(){
+  async function shareTool(){
     const shareData = { title: 'Background Remover — Megladon AI', text: 'Free AI background remover, no sign-up.', url: window.location.href };
     if (navigator.share){ try{ await navigator.share(shareData); }catch(e){} }
     else { try{ await navigator.clipboard.writeText(shareData.url); showToast('Link copied to clipboard'); }catch(e){ showToast('Could not copy link'); } }
-  };
+  }
 
   document.querySelectorAll('.faq-q').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -297,16 +303,18 @@
   const dropzone = document.getElementById('dropzone');
   const fileInput = document.getElementById('fileInput');
   const processCard = document.getElementById('processCard');
-  const processStage = document.getElementById('processStage');
   const errorCard = document.getElementById('errorCard');
   const resultCard = document.getElementById('resultCard');
   const resultImg = document.getElementById('resultImg');
   const downloadBtn = document.getElementById('downloadBtn');
   const resetBtn = document.getElementById('resetBtn');
   const errorResetBtn = document.getElementById('errorResetBtn');
+  const sensSlider = document.getElementById('sensSlider');
+  const sensVal = document.getElementById('sensVal');
 
   let resultBlob = null;
   let originalName = 'image';
+  let loadedImg = null;
 
   dropzone.addEventListener('click', () => fileInput.click());
   dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); });
@@ -324,42 +332,130 @@
     resultCard.style.display = 'none';
     fileInput.value = '';
     resultBlob = null;
+    loadedImg = null;
   }
   resetBtn.addEventListener('click', resetUI);
   errorResetBtn.addEventListener('click', resetUI);
 
-  async function handleFile(file){
+  function showError(title, msg){
+    dropzone.style.display = 'none';
+    processCard.style.display = 'none';
+    errorCard.style.display = 'block';
+    document.getElementById('errorTitle').textContent = title;
+    document.getElementById('errorMsg').textContent = msg;
+  }
+
+  function handleFile(file){
     if (!['image/jpeg','image/png','image/webp'].includes(file.type)){
-      dropzone.style.display = 'none';
-      errorCard.style.display = 'block';
-      document.getElementById('errorTitle').textContent = 'Unsupported file';
-      document.getElementById('errorMsg').textContent = 'Please upload a JPG, PNG, or WEBP image.';
+      showError('Unsupported file', 'Please upload a JPG, PNG, or WEBP image.');
       return;
     }
+
     originalName = file.name.replace(/\.[^/.]+$/, '');
     dropzone.style.display = 'none';
     processCard.style.display = 'block';
-    processStage.textContent = 'LOADING MODEL';
 
-    try {
-      setTimeout(() => { if (processCard.style.display === 'block') processStage.textContent = 'ANALYZING IMAGE'; }, 1800);
-      setTimeout(() => { if (processCard.style.display === 'block') processStage.textContent = 'REMOVING BACKGROUND'; }, 3600);
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        loadedImg = img;
+        processCard.style.display = 'none';
+        resultCard.style.display = 'block';
+        processImage();
+      };
+      img.onerror = () => showError('Could not read this image', 'The file may be corrupted. Please try another image.');
+      img.src = e.target.result;
+    };
+    reader.onerror = () => showError('Could not read this file', 'Please try uploading the image again.');
+    reader.readAsDataURL(file);
+  }
 
-      const blob = await removeBackground(file);
+  // Removes a fairly uniform background by flood-filling from the image edges,
+  // clearing any pixel connected to the border that is close in color to the
+  // detected background color. This is instant, needs no external library,
+  // and works reliably for logos, product shots, and plain-background photos.
+  function processImage(){
+    if (!loadedImg) return;
+    const tolerance = parseInt(sensSlider.value);
+
+    const canvas = document.createElement('canvas');
+    canvas.width = loadedImg.naturalWidth;
+    canvas.height = loadedImg.naturalHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(loadedImg, 0, 0);
+
+    const { width, height } = canvas;
+    const imageData = ctx.getImageData(0, 0, width, height);
+    const data = imageData.data;
+
+    // Sample background color from the four corners (averaged)
+    const corners = [
+      0,
+      (width - 1) * 4,
+      ((height - 1) * width) * 4,
+      ((height - 1) * width + (width - 1)) * 4
+    ];
+    let br = 0, bg = 0, bb = 0;
+    corners.forEach(idx => { br += data[idx]; bg += data[idx + 1]; bb += data[idx + 2]; });
+    br /= 4; bg /= 4; bb /= 4;
+
+    const toleranceSq = tolerance * tolerance * 3;
+    const visited = new Uint8Array(width * height);
+    const queue = new Int32Array(width * height);
+    let qHead = 0, qTail = 0;
+
+    function colorMatches(px){
+      const i = px * 4;
+      const dr = data[i] - br, dg = data[i + 1] - bg, db = data[i + 2] - bb;
+      return (dr * dr + dg * dg + db * db) <= toleranceSq;
+    }
+
+    // Seed the flood fill from every border pixel that matches the background color
+    for (let x = 0; x < width; x++){
+      [0, height - 1].forEach(y => {
+        const px = y * width + x;
+        if (!visited[px] && colorMatches(px)){ visited[px] = 1; queue[qTail++] = px; }
+      });
+    }
+    for (let y = 0; y < height; y++){
+      [0, width - 1].forEach(x => {
+        const px = y * width + x;
+        if (!visited[px] && colorMatches(px)){ visited[px] = 1; queue[qTail++] = px; }
+      });
+    }
+
+    while (qHead < qTail){
+      const px = queue[qHead++];
+      data[px * 4 + 3] = 0; // make transparent
+      const x = px % width, y = (px / width) | 0;
+
+      const neighbors = [
+        x > 0 ? px - 1 : -1,
+        x < width - 1 ? px + 1 : -1,
+        y > 0 ? px - width : -1,
+        y < height - 1 ? px + width : -1
+      ];
+      for (const npx of neighbors){
+        if (npx >= 0 && !visited[npx] && colorMatches(npx)){
+          visited[npx] = 1;
+          queue[qTail++] = npx;
+        }
+      }
+    }
+
+    ctx.putImageData(imageData, 0, 0);
+
+    canvas.toBlob(blob => {
       resultBlob = blob;
       resultImg.src = URL.createObjectURL(blob);
-
-      processCard.style.display = 'none';
-      resultCard.style.display = 'block';
-
-    } catch (err){
-      console.error(err);
-      processCard.style.display = 'none';
-      errorCard.style.display = 'block';
-      document.getElementById('errorTitle').textContent = 'Could not process this image';
-      document.getElementById('errorMsg').textContent = 'This can happen on the first try while the AI model downloads. Please try again.';
-    }
+    }, 'image/png');
   }
+
+  sensSlider.addEventListener('input', () => {
+    sensVal.textContent = sensSlider.value;
+    processImage();
+  });
 
   downloadBtn.addEventListener('click', () => {
     if (!resultBlob) return;

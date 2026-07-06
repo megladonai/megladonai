@@ -6,7 +6,7 @@
 <title>Megladon AI — Free Tools, Zero Friction</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg: #060B1A;
@@ -18,10 +18,10 @@
     --bone: #E9E4D6;
     --text: #EAF0F4;
     --text-muted: #7C8AAC;
+    --sidebar-w: 72px;
   }
 
   * { margin:0; padding:0; box-sizing:border-box; }
-
   html { scroll-behavior: smooth; }
 
   body{
@@ -46,22 +46,98 @@
     *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
   }
 
-  h1, h2, .display {
-    font-family: 'Bricolage Grotesque', sans-serif;
-    letter-spacing: -0.02em;
-  }
-
-  .mono {
-    font-family: 'IBM Plex Mono', monospace;
-    letter-spacing: 0.06em;
-  }
-
+  h1, h2, .display { font-family: 'Bricolage Grotesque', sans-serif; letter-spacing: -0.02em; }
+  .mono { font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.06em; }
   a { color: inherit; text-decoration: none; }
+
+  /* ---------- SIDEBAR ---------- */
+  .sidebar{
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: var(--sidebar-w);
+    background: var(--bg-deep);
+    border-right: 1px solid var(--panel-border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 0;
+    z-index: 60;
+  }
+
+  .side-logo{
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, var(--teal), #0B4D43 70%);
+    box-shadow: 0 0 14px rgba(43,224,196,0.55);
+  }
+
+  .side-nav{
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    align-items: center;
+  }
+
+  .side-link{
+    width: 38px; height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    color: var(--text-muted);
+    transition: background 0.15s ease, color 0.15s ease;
+    position: relative;
+  }
+  .side-link svg{ width: 18px; height: 18px; }
+  .side-link:hover, .side-link.active{
+    background: var(--teal-dim);
+    color: var(--teal);
+  }
+
+  .side-link .tip{
+    position: absolute;
+    left: 50px;
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-6px);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+  }
+  .side-link:hover .tip{ opacity: 1; transform: translateX(0); }
+
+  .side-share-btn{
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    border: 1px solid var(--panel-border);
+    background: transparent;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+  .side-share-btn:hover{ border-color: var(--teal); color: var(--teal); }
+  .side-share-btn svg{ width: 16px; height: 16px; }
+
+  @media (max-width: 900px){
+    .sidebar{ display: none; }
+  }
+
+  /* ---------- SITE WRAP ---------- */
+  .site-wrap{ margin-left: var(--sidebar-w); }
+  @media (max-width: 900px){ .site-wrap{ margin-left: 0; } }
 
   /* ---------- NAV ---------- */
   header{
     position: fixed;
-    top: 0; left: 0; right: 0;
+    top: 0; left: var(--sidebar-w); right: 0;
     z-index: 50;
     display: flex;
     align-items: center;
@@ -70,15 +146,16 @@
     background: linear-gradient(to bottom, rgba(3,6,17,0.9), transparent);
     backdrop-filter: blur(6px);
   }
+  @media (max-width: 900px){ header{ left: 0; } }
 
   .logo{
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 0.88rem;
+    font-size: 0.9rem;
     font-weight: 700;
-    letter-spacing: 0.01em;
   }
+  .logo:hover{ opacity: 0.85; }
 
   .logo-mark{
     width: 22px; height: 22px;
@@ -86,19 +163,79 @@
     background: radial-gradient(circle at 35% 30%, var(--teal), #0B4D43 70%);
     box-shadow: 0 0 14px rgba(43,224,196,0.55);
     flex-shrink: 0;
+    display: none;
   }
+  @media (max-width: 900px){ .logo-mark{ display: block; } }
 
   nav.links{
     display: flex;
+    align-items: center;
     gap: 26px;
-    font-size: 0.76rem;
+    font-size: 0.78rem;
     color: var(--text-muted);
   }
   nav.links a:hover{ color: var(--teal); }
 
-  @media (max-width: 720px){
-    nav.links{ display:none; }
+  .header-share{
+    display: none;
+    width: 34px; height: 34px;
+    border-radius: 9px;
+    border: 1px solid var(--panel-border);
+    background: transparent;
+    color: var(--text-muted);
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
   }
+  .header-share svg{ width: 15px; height: 15px; }
+
+  .hamburger{
+    display: none;
+    width: 34px; height: 34px;
+    border-radius: 9px;
+    border: 1px solid var(--panel-border);
+    background: transparent;
+    color: var(--text);
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  @media (max-width: 900px){
+    nav.links a{ display: none; }
+    .header-share{ display: flex; }
+    .hamburger{ display: flex; }
+  }
+
+  /* ---------- MOBILE MENU ---------- */
+  .mobile-menu{
+    position: fixed;
+    inset: 0;
+    background: var(--bg-deep);
+    z-index: 200;
+    display: none;
+    flex-direction: column;
+    padding: 24px 6vw;
+  }
+  .mobile-menu.open{ display: flex; }
+  .mobile-menu .close-btn{
+    align-self: flex-end;
+    width: 36px; height: 36px;
+    border: 1px solid var(--panel-border);
+    border-radius: 9px;
+    background: transparent;
+    color: var(--text);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+  }
+  .mobile-menu a{
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--panel-border);
+  }
+  .mobile-menu a:hover{ color: var(--teal); }
 
   /* ---------- HERO ---------- */
   .hero{
@@ -115,7 +252,6 @@
       linear-gradient(to bottom, var(--bg) 0%, var(--bg-deep) 100%);
   }
 
-  /* sonar sweep */
   .sonar{
     position: absolute;
     top: 50%; left: 50%;
@@ -133,10 +269,7 @@
     mask: radial-gradient(circle, transparent 0%, black 25%, black 60%, transparent 61%);
     -webkit-mask: radial-gradient(circle, transparent 0%, black 25%, black 60%, transparent 61%);
   }
-  .sonar-ring{
-    position: absolute; inset: 0;
-    border-radius: 50%;
-  }
+  .sonar-ring{ position: absolute; inset: 0; border-radius: 50%; }
   .sonar-ring::before, .sonar-ring::after, .sonar-ring div{
     content:"";
     position:absolute;
@@ -146,7 +279,6 @@
   .ring-a{ inset: 18%; }
   .ring-b{ inset: 32%; }
   .ring-c{ inset: 46%; }
-
   @keyframes spin { to { transform: rotate(360deg); } }
 
   .eyebrow{
@@ -170,10 +302,7 @@
     line-height: 1.1;
     max-width: 680px;
   }
-
-  .hero h1 span{
-    color: var(--teal);
-  }
+  .hero h1 span{ color: var(--teal); }
 
   .hero p{
     position: relative;
@@ -216,7 +345,6 @@
   }
   .btn-secondary:hover{ border-color: var(--teal); background: rgba(43,224,196,0.06); }
 
-  /* ---------- STATS STRIP ---------- */
   .stats{
     position: relative;
     z-index: 2;
@@ -241,27 +369,11 @@
   }
 
   /* ---------- TOOLS SECTION ---------- */
-  .tools{
-    padding: 90px 6vw 110px;
-    background: var(--bg-deep);
-    position: relative;
-  }
+  .tools{ padding: 90px 6vw 110px; background: var(--bg-deep); position: relative; }
 
-  .section-head{
-    max-width: 600px;
-    margin: 0 auto 50px;
-    text-align: center;
-  }
-  .section-head .mono{
-    font-size: 0.7rem;
-    color: var(--teal);
-    display: block;
-    margin-bottom: 12px;
-  }
-  .section-head h2{
-    font-size: clamp(1.7rem, 3vw, 2.3rem);
-    font-weight: 700;
-  }
+  .section-head{ max-width: 600px; margin: 0 auto 50px; text-align: center; }
+  .section-head .mono{ font-size: 0.7rem; color: var(--teal); display: block; margin-bottom: 12px; }
+  .section-head h2{ font-size: clamp(1.7rem, 3vw, 2.3rem); font-weight: 700; }
 
   .grid{
     display: grid;
@@ -274,7 +386,7 @@
   .card{
     background: var(--panel);
     border: 1px solid var(--panel-border);
-    border-radius: 16px;
+    border-radius: 18px;
     padding: 28px 24px;
     position: relative;
     overflow: hidden;
@@ -293,17 +405,12 @@
     opacity: 0;
     transition: opacity 0.25s ease;
   }
-
-  .card:hover{
-    border-color: rgba(43,224,196,0.5);
-    transform: translateY(-4px);
-    background: #0F1B3A;
-  }
+  .card:hover{ border-color: rgba(43,224,196,0.5); transform: translateY(-4px); background: #0F1B3A; }
   .card:hover::before{ opacity: 1; }
 
   .card-icon{
     width: 40px; height: 40px;
-    border-radius: 10px;
+    border-radius: 12px;
     background: var(--teal-dim);
     display: flex;
     align-items: center;
@@ -313,36 +420,37 @@
   .card-icon svg{ width: 20px; height: 20px; }
 
   .card .tag{
+    font-family: 'Quicksand', sans-serif;
     font-size: 0.64rem;
+    font-weight: 600;
     color: var(--text-muted);
     text-transform: uppercase;
   }
 
   .card h3{
-    font-family: 'Bricolage Grotesque', sans-serif;
-    font-size: 1.15rem;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 1.18rem;
     font-weight: 700;
   }
 
   .card p{
+    font-family: 'Quicksand', sans-serif;
     color: var(--text-muted);
-    font-size: 0.87rem;
+    font-size: 0.9rem;
     line-height: 1.55;
     flex-grow: 1;
   }
 
   .card .go{
+    font-family: 'Quicksand', sans-serif;
     display: flex;
     align-items: center;
     gap: 7px;
-    font-size: 0.8rem;
+    font-size: 0.82rem;
+    font-weight: 600;
     color: var(--teal);
-    font-weight: 500;
   }
-  .card .go svg{
-    width: 13px; height: 13px;
-    transition: transform 0.2s ease;
-  }
+  .card .go svg{ width: 13px; height: 13px; transition: transform 0.2s ease; }
   .card:hover .go svg{ transform: translateX(4px); }
 
   /* ---------- FOOTER ---------- */
@@ -357,20 +465,74 @@
     color: var(--text-muted);
     font-size: 0.82rem;
   }
+  .footer-links{ display: flex; gap: 20px; }
+  .footer-links a:hover{ color: var(--teal); }
+
+  /* ---------- TOAST ---------- */
+  .toast{
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--panel);
+    border: 1px solid var(--teal);
+    color: var(--text);
+    padding: 10px 20px;
+    border-radius: 9px;
+    font-size: 0.82rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    z-index: 300;
+  }
+  .toast.show{ opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
 
+<aside class="sidebar">
+  <a href="index.html" class="side-logo" title="Megladon AI Home"></a>
+  <nav class="side-nav">
+    <a href="index.html" class="side-link active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      <span class="tip">Home</span>
+    </a>
+    <a href="index.html#tools" class="side-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+      <span class="tip">Tools</span>
+    </a>
+    <a href="about.html" class="side-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>
+      <span class="tip">About</span>
+    </a>
+    <a href="contact.html" class="side-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M22 6l-10 7L2 6"/></svg>
+      <span class="tip">Contact</span>
+    </a>
+  </nav>
+  <button class="side-share-btn" id="sideShareBtn" title="Share website">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>
+  </button>
+</aside>
+
+<div class="site-wrap">
+
 <header>
-  <div class="logo">
+  <a href="index.html" class="logo">
     <div class="logo-mark"></div>
     MEGLADON AI
-  </div>
+  </a>
   <nav class="links">
-    <a href="#tools">Tools</a>
-    <a href="#" onclick="return false;">About</a>
-    <a href="#" onclick="return false;">Contact</a>
+    <a href="index.html#tools">Tools</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
   </nav>
+  <button class="header-share" id="headerShareBtn" title="Share website">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>
+  </button>
+  <button class="hamburger" id="hamburgerBtn" title="Menu">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+  </button>
 </header>
 
 <section class="hero">
@@ -388,22 +550,13 @@
 
   <div class="cta-row">
     <a href="#tools" class="btn-primary">Browse tools</a>
-    <a href="#" class="btn-secondary" onclick="return false;">How it works</a>
+    <a href="about.html" class="btn-secondary">How it works</a>
   </div>
 
   <div class="stats">
-    <div class="stat">
-      <div class="num">5</div>
-      <div class="label mono">Tools live</div>
-    </div>
-    <div class="stat">
-      <div class="num">0 Rs</div>
-      <div class="label mono">Cost to use</div>
-    </div>
-    <div class="stat">
-      <div class="num">100%</div>
-      <div class="label mono">Runs client-side</div>
-    </div>
+    <div class="stat"><div class="num">5</div><div class="label mono">Tools live</div></div>
+    <div class="stat"><div class="num">0 $</div><div class="label mono">Cost to use</div></div>
+    <div class="stat"><div class="num">100%</div><div class="label mono">Runs client-side</div></div>
   </div>
 </section>
 
@@ -414,64 +567,107 @@
   </div>
 
   <div class="grid">
-
     <a href="pdf-to-word/index.html" class="card">
-      <div class="card-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
-      </div>
-      <span class="tag mono">DOCUMENT</span>
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div>
+      <span class="tag">DOCUMENT</span>
       <h3>PDF to Word</h3>
       <p>Turn a locked PDF into an editable .docx file in seconds — no upload to a stranger's server.</p>
       <span class="go">Open tool <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
     </a>
 
     <a href="image-compressor/index.html" class="card">
-      <div class="card-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-      </div>
-      <span class="tag mono">IMAGE</span>
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>
+      <span class="tag">IMAGE</span>
       <h3>Image Compressor</h3>
       <p>Shrink photo file size without wrecking quality. Drag, adjust, download.</p>
       <span class="go">Open tool <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
     </a>
 
     <a href="background-remover/index.html" class="card">
-      <div class="card-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg>
-      </div>
-      <span class="tag mono">IMAGE</span>
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg></div>
+      <span class="tag">IMAGE</span>
       <h3>Background Remover</h3>
       <p>Strip the background from any photo automatically. Clean transparent PNG, ready to use.</p>
       <span class="go">Open tool <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
     </a>
 
     <a href="qr-generator/index.html" class="card">
-      <div class="card-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM19 14h2v2h-2zM14 19h2v2h-2zM19 19h2v2h-2z"/></svg>
-      </div>
-      <span class="tag mono">UTILITY</span>
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM19 14h2v2h-2zM14 19h2v2h-2zM19 19h2v2h-2z"/></svg></div>
+      <span class="tag">UTILITY</span>
       <h3>QR Code Generator</h3>
       <p>Turn any link, number or note into a scannable code. Pick a color, pick a size, done.</p>
       <span class="go">Open tool <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
     </a>
 
     <a href="zakat-calculator/index.html" class="card">
-      <div class="card-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M8 10h4a2 2 0 1 1 0 4H8"/></svg>
-      </div>
-      <span class="tag mono">FINANCE</span>
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M8 10h4a2 2 0 1 1 0 4H8"/></svg></div>
+      <span class="tag">FINANCE</span>
       <h3>Zakat Calculator</h3>
       <p>Enter cash, gold, silver and savings — get a clear 2.5% breakdown against current Nisab.</p>
       <span class="go">Open tool <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
     </a>
-
   </div>
 </section>
 
 <footer>
   <div>© 2026 Megladon AI. Built for speed.</div>
-  <div class="mono">NO ACCOUNT · NO TRACKING · NO CATCH</div>
+  <div class="footer-links mono">
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+    <a href="privacy.html">Privacy</a>
+  </div>
 </footer>
+
+</div>
+
+<div class="mobile-menu" id="mobileMenu">
+  <button class="close-btn" id="closeMenuBtn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M18 6L6 18M6 6l12 12"/></svg>
+  </button>
+  <a href="index.html">Home</a>
+  <a href="index.html#tools">Tools</a>
+  <a href="about.html">About</a>
+  <a href="contact.html">Contact</a>
+  <a href="privacy.html">Privacy</a>
+</div>
+
+<div class="toast" id="toast">Link copied to clipboard</div>
+
+<script>
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+  const closeMenuBtn = document.getElementById('closeMenuBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  hamburgerBtn.addEventListener('click', () => mobileMenu.classList.add('open'));
+  closeMenuBtn.addEventListener('click', () => mobileMenu.classList.remove('open'));
+
+  function showToast(msg){
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2200);
+  }
+
+  async function shareSite(){
+    const shareData = {
+      title: 'Megladon AI — Free Online Tools',
+      text: 'Free PDF, image, QR and Zakat tools — no sign-up, runs in your browser.',
+      url: window.location.origin + window.location.pathname.replace(/[^/]*$/, '')
+    };
+    if (navigator.share){
+      try { await navigator.share(shareData); } catch(e) {}
+    } else {
+      try {
+        await navigator.clipboard.writeText(shareData.url || window.location.href);
+        showToast('Link copied to clipboard');
+      } catch(e) {
+        showToast('Could not copy link');
+      }
+    }
+  }
+
+  document.getElementById('sideShareBtn').addEventListener('click', shareSite);
+  document.getElementById('headerShareBtn').addEventListener('click', shareSite);
+</script>
 
 </body>
 </html>
