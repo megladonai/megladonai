@@ -89,10 +89,16 @@
   }
 
   .side-logo{
-    width: 30px; height: 30px;
+    width: 32px; height: 32px;
     border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, var(--teal), #0B4D43 70%);
-    box-shadow: 0 0 14px rgba(43,224,196,0.55);
+    overflow: hidden;
+    display: block;
+    box-shadow: 0 0 14px rgba(43,224,196,0.35);
+  }
+  .side-logo img{
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
   }
 
   .side-nav{
@@ -181,12 +187,17 @@
   .logo:hover{ opacity: 0.85; }
 
   .logo-mark{
-    width: 22px; height: 22px;
+    width: 24px; height: 24px;
     border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, var(--teal), #0B4D43 70%);
-    box-shadow: 0 0 14px rgba(43,224,196,0.55);
+    overflow: hidden;
+    box-shadow: 0 0 14px rgba(43,224,196,0.35);
     flex-shrink: 0;
     display: none;
+  }
+  .logo-mark img{
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
   }
   @media (max-width: 900px){ .logo-mark{ display: block; } }
 
@@ -514,7 +525,7 @@
 <body>
 
 <aside class="sidebar">
-  <a href="index.html" class="side-logo" title="Megladon AI Home"></a>
+  <a href="index.html" class="side-logo" title="Megladon AI Home"><img src="assets/logo.png" alt="Megladon AI logo"></a>
   <nav class="side-nav">
     <a href="index.html" class="side-link active">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
@@ -542,7 +553,7 @@
 
 <header>
   <a href="index.html" class="logo">
-    <div class="logo-mark"></div>
+    <div class="logo-mark"><img src="assets/logo.png" alt="Megladon AI logo"></div>
     MEGLADON AI
   </a>
   <nav class="links">
