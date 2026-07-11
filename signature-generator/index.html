@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signature Generator — Megladon AI</title>
+<meta name="description" content="Create a digital signature online for free — draw it or type it in a handwriting font, download as transparent PNG, no sign-up.">
+<link rel="canonical" href="https://megladonai.netlify.app/signature-generator/">
+<link rel="icon" type="image/png" href="../assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&family=Quicksand:wght@500;600;700&family=Dancing+Script:wght@500;700&family=Great+Vibes&family=Sacramento&family=Alex+Brush&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#060B1A; --bg-deep:#030611; --panel:#0D1730; --panel-border:#1B2A4E;
+    --teal:#2BE0C4; --teal-dim:rgba(43,224,196,0.14); --bone:#E9E4D6;
+    --text:#EAF0F4; --text-muted:#7C8AAC; --sidebar-w:72px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; overflow-x:hidden; position:relative;}
+  body::after{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:100; opacity:0.035;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  @media (prefers-reduced-motion: reduce){ *,*::before,*::after{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important;} }
+  h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif; letter-spacing:-0.02em;}
+  .mono{font-family:'IBM Plex Mono',monospace; letter-spacing:0.06em;}
+  a{color:inherit; text-decoration:none;}
+
+  .sidebar{position:fixed; top:0; left:0; bottom:0; width:var(--sidebar-w); background:var(--bg-deep); border-right:1px solid var(--panel-border);
+    display:flex; flex-direction:column; align-items:center; justify-content:space-between; padding:20px 0; z-index:60;}
+  .side-logo{width:32px; height:32px; border-radius:50%; overflow:hidden; display:block; box-shadow:0 0 14px rgba(43,224,196,0.35);}
+  .side-logo img{width:100%; height:100%; object-fit:cover; display:block;}
+  .side-nav{display:flex; flex-direction:column; gap:22px; align-items:center;}
+  .side-link{width:38px; height:38px; display:flex; align-items:center; justify-content:center; border-radius:10px; color:var(--text-muted); transition:background .15s,color .15s;}
+  .side-link svg{width:18px; height:18px;}
+  .side-link:hover, .side-link.active{background:var(--teal-dim); color:var(--teal);}
+  .side-share-btn{width:38px; height:38px; border-radius:10px; border:1px solid var(--panel-border); background:transparent; color:var(--text-muted); display:flex; align-items:center; justify-content:center; cursor:pointer;}
+  .side-share-btn:hover{border-color:var(--teal); color:var(--teal);}
+  .side-share-btn svg{width:16px; height:16px;}
+  @media (max-width:900px){ .sidebar{display:none;} }
+
+  .site-wrap{margin-left:var(--sidebar-w);}
+  @media (max-width:900px){ .site-wrap{margin-left:0;} }
+
+  header{position:sticky; top:0; z-index:50; display:flex; align-items:center; justify-content:space-between; padding:16px 5vw;
+    background:rgba(6,11,26,0.85); backdrop-filter:blur(8px); border-bottom:1px solid var(--panel-border);}
+  .logo{display:flex; align-items:center; gap:8px; font-size:0.9rem; font-weight:700;}
+  .logo-mark{width:24px; height:24px; border-radius:50%; overflow:hidden; box-shadow:0 0 14px rgba(43,224,196,0.35); display:none;}
+  .logo-mark img{width:100%; height:100%; object-fit:cover; display:block;}
+  @media (max-width:900px){ .logo-mark{display:block;} }
+  .back-link{display:flex; align-items:center; gap:6px; font-size:0.8rem; color:var(--text-muted); padding:8px 14px; border:1px solid var(--panel-border); border-radius:9px; transition:border-color .15s, color .15s;}
+  .back-link:hover{border-color:var(--teal); color:var(--teal);}
+  .back-link svg{width:14px; height:14px;}
+  nav.links{display:flex; align-items:center; gap:24px; font-size:0.78rem; color:var(--text-muted);}
+  nav.links a:hover{color:var(--teal);}
+  .header-right{display:flex; align-items:center; gap:14px;}
+  .header-share, .hamburger{display:none; width:34px; height:34px; border-radius:9px; border:1px solid var(--panel-border); background:transparent; color:var(--text-muted); align-items:center; justify-content:center; cursor:pointer;}
+  .header-share svg, .hamburger svg{width:15px; height:15px;}
+  @media (max-width:900px){ nav.links a:not(.back-link){display:none;} .header-share{display:flex;} .hamburger{display:flex;} }
+
+  .mobile-menu{position:fixed; inset:0; background:var(--bg-deep); z-index:200; display:none; flex-direction:column; padding:24px 6vw;}
+  .mobile-menu.open{display:flex;}
+  .mobile-menu .close-btn{align-self:flex-end; width:36px; height:36px; border:1px solid var(--panel-border); border-radius:9px; background:transparent; color:var(--text); display:flex; align-items:center; justify-content:center; cursor:pointer;}
+  .mobile-menu a{font-family:'Bricolage Grotesque',sans-serif; font-size:1.5rem; font-weight:700; padding:14px 0; border-bottom:1px solid var(--panel-border);}
+  .mobile-menu a:hover{color:var(--teal);}
+
+  .tool-hero{padding:64px 6vw 20px; text-align:center;}
+  .eyebrow{font-size:0.62rem; color:var(--teal); text-transform:uppercase; background:var(--teal-dim); border:1px solid rgba(43,224,196,0.3); display:inline-block; padding:5px 12px; border-radius:100px; margin-bottom:18px;}
+  .tool-hero h1{font-size:clamp(1.7rem,3.6vw,2.5rem); margin-bottom:12px;}
+  .tool-hero p{color:var(--text-muted); font-size:0.95rem; max-width:480px; margin:0 auto;}
+
+  .tool-wrap{max-width:700px; margin:40px auto 0; padding:0 6vw;}
+
+  .mode-tabs{display:flex; gap:6px; background:var(--panel); border:1px solid var(--panel-border); border-radius:12px; padding:5px; margin-bottom:22px;}
+  .mode-tab{flex:1; text-align:center; padding:11px; border-radius:9px; font-family:'Quicksand',sans-serif; font-weight:600; font-size:0.85rem; color:var(--text-muted); cursor:pointer; transition:background .15s, color .15s;}
+  .mode-tab.active{background:var(--teal-dim); color:var(--teal);}
+
+  .mode-panel{display:none;}
+  .mode-panel.active{display:block;}
+
+  .draw-panel{background:#FFFFFF; border-radius:18px; overflow:hidden; border:1px solid var(--panel-border);}
+  #drawCanvas{display:block; width:100%; height:280px; touch-action:none; cursor:crosshair;}
+  .draw-controls{background:var(--panel); border:1px solid var(--panel-border); border-top:none; border-radius:0 0 18px 18px; padding:16px 20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;}
+  .pen-colors{display:flex; gap:8px;}
+  .pen-color{width:26px; height:26px; border-radius:50%; cursor:pointer; border:2px solid transparent; transition:border-color .15s;}
+  .pen-color.active{border-color:var(--teal);}
+  .draw-hint{font-family:'Quicksand',sans-serif; color:var(--text-muted); font-size:0.78rem;}
+
+  .type-panel .field{margin-bottom:18px;}
+  .type-panel label{font-family:'Quicksand',sans-serif; font-size:0.82rem; font-weight:600; display:block; margin-bottom:8px; color:var(--bone);}
+  .type-panel input{width:100%; background:var(--panel); border:1px solid var(--panel-border); border-radius:12px; padding:14px 16px;
+    color:var(--text); font-family:'Inter',sans-serif; font-size:1rem; outline:none; transition:border-color .15s;}
+  .type-panel input:focus{border-color:var(--teal);}
+
+  .font-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:18px;}
+  .font-option{background:#FFFFFF; border:2px solid var(--panel-border); border-radius:14px; padding:20px 16px; text-align:center; cursor:pointer; transition:border-color .15s;}
+  .font-option.active{border-color:var(--teal);}
+  .font-option .sig-preview{font-size:1.8rem; color:#111; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+
+  .type-color-row{display:flex; align-items:center; gap:12px; margin-bottom:8px;}
+  .type-color-row label{margin-bottom:0;}
+
+  .action-row{display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:22px;}
+  .btn-primary{background:var(--teal); color:#04231E; font-weight:600; padding:13px 26px; border-radius:9px; font-size:0.9rem; border:none; cursor:pointer;
+    box-shadow:0 0 26px rgba(43,224,196,0.32); transition:transform .15s ease, box-shadow .15s ease; display:inline-flex; align-items:center; gap:8px;}
+  .btn-primary:hover{transform:translateY(-2px); box-shadow:0 0 36px rgba(43,224,196,0.48);}
+  .btn-ghost{background:transparent; color:var(--text-muted); border:1px solid var(--panel-border); padding:13px 22px; border-radius:9px; font-size:0.85rem; cursor:pointer; transition:border-color .15s, color .15s;}
+  .btn-ghost:hover{border-color:var(--teal); color:var(--teal);}
+
+  .preview-result{display:none; margin-top:24px; background:var(--panel); border:1px solid var(--teal); border-radius:16px; padding:24px; text-align:center;
+    background-image:linear-gradient(45deg,#1a2440 25%,transparent 25%),linear-gradient(-45deg,#1a2440 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#1a2440 75%),linear-gradient(-45deg,transparent 75%,#1a2440 75%);
+    background-size:20px 20px; background-position:0 0,0 10px,10px -10px,-10px 0px;}
+  .preview-result img{max-width:100%; max-height:140px;}
+
+  .how{max-width:900px; margin:90px auto 0; padding:0 6vw; text-align:center;}
+  .how h2{font-size:1.5rem; margin-bottom:40px;}
+  .how-steps{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  @media (max-width:700px){ .how-steps{grid-template-columns:1fr;} }
+  .how-step{background:var(--panel); border:1px solid var(--panel-border); border-radius:16px; padding:26px 20px;}
+  .how-step .num{width:32px; height:32px; border-radius:50%; background:var(--teal-dim); color:var(--teal); display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono',monospace; font-size:0.85rem; margin:0 auto 14px;}
+  .how-step h4{font-family:'Quicksand',sans-serif; font-size:1rem; margin-bottom:6px;}
+  .how-step p{font-family:'Quicksand',sans-serif; color:var(--text-muted); font-size:0.82rem;}
+
+  .faq{max-width:700px; margin:80px auto 100px; padding:0 6vw;}
+  .faq h2{font-size:1.5rem; text-align:center; margin-bottom:32px;}
+  .faq-item{border:1px solid var(--panel-border); border-radius:14px; margin-bottom:12px; overflow:hidden; background:var(--panel);}
+  .faq-q{width:100%; background:transparent; border:none; color:var(--text); text-align:left; padding:18px 20px; font-family:'Quicksand',sans-serif; font-weight:600; font-size:0.92rem; cursor:pointer; display:flex; justify-content:space-between; align-items:center;}
+  .faq-q svg{width:16px; height:16px; transition:transform .25s ease; flex-shrink:0; color:var(--teal);}
+  .faq-item.open .faq-q svg{transform:rotate(180deg);}
+  .faq-a{max-height:0; overflow:hidden; transition:max-height .3s ease;}
+  .faq-a p{padding:0 20px 18px; color:var(--text-muted); font-size:0.85rem; font-family:'Quicksand',sans-serif; line-height:1.6;}
+
+  footer{padding:30px 6vw; border-top:1px solid var(--panel-border); display:flex; justify-content:space-between; flex-wrap:wrap; gap:14px; color:var(--text-muted); font-size:0.8rem;}
+  .footer-links{display:flex; gap:18px;}
+  .footer-links a:hover{color:var(--teal);}
+
+  .toast{position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--panel); border:1px solid var(--teal); color:var(--text);
+    padding:10px 20px; border-radius:9px; font-size:0.82rem; opacity:0; pointer-events:none; transition:opacity .25s ease, transform .25s ease; z-index:300;}
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <a href="../index.html" class="side-logo" title="Home"><img src="../assets/logo.png" alt="Megladon AI logo"></a>
+  <nav class="side-nav">
+    <a href="../index.html" class="side-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></a>
+    <a href="../index.html#cat-utility" class="side-link active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></a>
+    <a href="../about.html" class="side-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg></a>
+    <a href="../contact.html" class="side-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M22 6l-10 7L2 6"/></svg></a>
+  </nav>
+  <button class="side-share-btn" onclick="shareTool()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></button>
+</aside>
+
+<div class="site-wrap">
+  <header>
+    <a href="../index.html" class="logo"><div class="logo-mark"><img src="../assets/logo.png" alt="Megladon AI logo"></div>MEGLADON AI</a>
+    <nav class="links">
+      <a href="../index.html#cat-utility" class="back-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>All tools</a>
+      <a href="../about.html">About</a>
+      <a href="../contact.html">Contact</a>
+    </nav>
+    <div class="header-right">
+      <button class="header-share" onclick="shareTool()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></button>
+      <button class="hamburger" id="hamburgerBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+    </div>
+  </header>
+
+  <section class="tool-hero">
+    <span class="eyebrow mono">UTILITY</span>
+    <h1>Signature Generator</h1>
+    <p>Draw your signature, or type it in a handwriting font — download it as a transparent PNG for any document.</p>
+  </section>
+
+  <div class="tool-wrap">
+
+    <div class="mode-tabs">
+      <div class="mode-tab active" data-mode="draw">Draw signature</div>
+      <div class="mode-tab" data-mode="type">Type signature</div>
+    </div>
+
+    <div class="mode-panel active" data-panel="draw">
+      <div class="draw-panel">
+        <canvas id="drawCanvas"></canvas>
+      </div>
+      <div class="draw-controls">
+        <div class="pen-colors">
+          <div class="pen-color active" style="background:#0F172A;" data-color="#0F172A"></div>
+          <div class="pen-color" style="background:#1E40AF;" data-color="#1E40AF"></div>
+          <div class="pen-color" style="background:#7C2D12;" data-color="#7C2D12"></div>
+          <div class="pen-color" style="background:#166534;" data-color="#166534"></div>
+        </div>
+        <span class="draw-hint">Draw with your mouse or finger</span>
+        <button class="btn-ghost" id="clearDrawBtn" style="padding:8px 16px;">Clear</button>
+      </div>
+    </div>
+
+    <div class="mode-panel" data-panel="type">
+      <div class="field">
+        <label>Your name</label>
+        <input type="text" id="nameInput" placeholder="e.g. Muneeb Ahmad" maxlength="40">
+      </div>
+
+      <label>Choose a style</label>
+      <div class="font-grid">
+        <div class="font-option active" data-font="'Dancing Script', cursive"><div class="sig-preview" style="font-family:'Dancing Script',cursive;">Signature</div></div>
+        <div class="font-option" data-font="'Great Vibes', cursive"><div class="sig-preview" style="font-family:'Great Vibes',cursive;">Signature</div></div>
+        <div class="font-option" data-font="'Sacramento', cursive"><div class="sig-preview" style="font-family:'Sacramento',cursive;">Signature</div></div>
+        <div class="font-option" data-font="'Alex Brush', cursive"><div class="sig-preview" style="font-family:'Alex Brush',cursive;">Signature</div></div>
+      </div>
+
+      <div class="type-color-row">
+        <label>Color</label>
+        <div class="pen-colors" id="typeColors">
+          <div class="pen-color active" style="background:#0F172A;" data-color="#0F172A"></div>
+          <div class="pen-color" style="background:#1E40AF;" data-color="#1E40AF"></div>
+          <div class="pen-color" style="background:#7C2D12;" data-color="#7C2D12"></div>
+          <div class="pen-color" style="background:#166534;" data-color="#166534"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="preview-result" id="previewResult">
+      <img id="previewImg" alt="Signature preview">
+    </div>
+
+    <div class="action-row">
+      <button class="btn-primary" id="downloadBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
+        Download PNG
+      </button>
+    </div>
+
+  </div>
+
+  <section class="how">
+    <h2>How it works</h2>
+    <div class="how-steps">
+      <div class="how-step"><div class="num">1</div><h4>Choose a mode</h4><p>Draw with your mouse/finger, or type your name.</p></div>
+      <div class="how-step"><div class="num">2</div><h4>Customize</h4><p>Pick a color, or a handwriting style for typed signatures.</p></div>
+      <div class="how-step"><div class="num">3</div><h4>Download</h4><p>Save a transparent PNG, ready to drop into any document.</p></div>
+    </div>
+  </section>
+
+  <section class="faq">
+    <h2>Frequently asked</h2>
+    <div class="faq-item">
+      <button class="faq-q">Is this really free? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+      <div class="faq-a"><p>Yes — no sign-up, no watermark, unlimited use.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q">Is my signature uploaded or stored anywhere? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+      <div class="faq-a"><p>No — everything happens in your browser. Nothing is sent to a server or saved.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q">Is this a legally binding e-signature? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+      <div class="faq-a"><p>This creates a signature image you can place on documents. For legally binding e-signatures with audit trails, use a dedicated e-signature service.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q">Can I use this on my phone? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+      <div class="faq-a"><p>Yes — the drawing pad supports touch, so you can sign naturally with your finger.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    <div>© 2026 Megladon AI. Built for speed.</div>
+    <div class="footer-links mono">
+      <a href="../about.html">About</a>
+      <a href="../contact.html">Contact</a>
+      <a href="../privacy.html">Privacy</a>
+    </div>
+  </footer>
+</div>
+
+<div class="mobile-menu" id="mobileMenu">
+  <button class="close-btn" id="closeMenuBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+  <a href="../index.html">Home</a>
+  <a href="../index.html#cat-utility">Tools</a>
+  <a href="../about.html">About</a>
+  <a href="../contact.html">Contact</a>
+</div>
+
+<div class="toast" id="toast">Download started</div>
+
+<script>
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+  const closeMenuBtn = document.getElementById('closeMenuBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  hamburgerBtn.addEventListener('click', () => mobileMenu.classList.add('open'));
+  closeMenuBtn.addEventListener('click', () => mobileMenu.classList.remove('open'));
+
+  function showToast(msg){
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2200);
+  }
+  function shareTool(){
+    const shareData = { title: 'Signature Generator — Megladon AI', text: 'Free signature generator, no sign-up.', url: window.location.href };
+    if (navigator.share){ navigator.share(shareData).catch(()=>{}); }
+    else { navigator.clipboard.writeText(shareData.url).then(()=>showToast('Link copied to clipboard')).catch(()=>showToast('Could not copy link')); }
+  }
+
+  document.querySelectorAll('.faq-q').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.parentElement;
+      const answer = item.querySelector('.faq-a');
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i => { i.classList.remove('open'); i.querySelector('.faq-a').style.maxHeight = null; });
+      if (!isOpen){ item.classList.add('open'); answer.style.maxHeight = answer.scrollHeight + 'px'; }
+    });
+  });
+
+  // Mode tabs
+  let mode = 'draw';
+  document.querySelectorAll('.mode-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.mode-panel').forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      mode = tab.dataset.mode;
+      document.querySelector(`.mode-panel[data-panel="${mode}"]`).classList.add('active');
+      document.getElementById('previewResult').style.display = 'none';
+    });
+  });
+
+  // Drawing canvas
+  const canvas = document.getElementById('drawCanvas');
+  const ctx = canvas.getContext('2d');
+  let drawing = false;
+  let hasDrawn = false;
+  let drawColor = '#0F172A';
+
+  function resizeCanvas(){
+    const rect = canvas.getBoundingClientRect();
+    const ratio = window.devicePixelRatio || 1;
+    canvas.width = rect.width * ratio;
+    canvas.height = rect.height * ratio;
+    ctx.scale(ratio, ratio);
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = drawColor;
+  }
+  window.addEventListener('resize', () => { const data = hasDrawn ? canvas.toDataURL() : null; resizeCanvas(); });
+  resizeCanvas();
+
+  function getPos(e){
+    const rect = canvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return { x: clientX - rect.left, y: clientY - rect.top };
+  }
+
+  function startDraw(e){
+    drawing = true;
+    hasDrawn = true;
+    const pos = getPos(e);
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
+    e.preventDefault();
+  }
+  function moveDraw(e){
+    if (!drawing) return;
+    const pos = getPos(e);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.stroke();
+    e.preventDefault();
+  }
+  function endDraw(){ drawing = false; }
+
+  canvas.addEventListener('mousedown', startDraw);
+  canvas.addEventListener('mousemove', moveDraw);
+  canvas.addEventListener('mouseup', endDraw);
+  canvas.addEventListener('mouseleave', endDraw);
+  canvas.addEventListener('touchstart', startDraw);
+  canvas.addEventListener('touchmove', moveDraw);
+  canvas.addEventListener('touchend', endDraw);
+
+  document.getElementById('clearDrawBtn').addEventListener('click', () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    hasDrawn = false;
+    document.getElementById('previewResult').style.display = 'none';
+  });
+
+  document.querySelectorAll('.draw-controls .pen-color').forEach(sw => {
+    sw.addEventListener('click', () => {
+      document.querySelectorAll('.draw-controls .pen-color').forEach(s => s.classList.remove('active'));
+      sw.classList.add('active');
+      drawColor = sw.dataset.color;
+      ctx.strokeStyle = drawColor;
+    });
+  });
+
+  // Type mode
+  let selectedFont = "'Dancing Script', cursive";
+  let typeColor = '#0F172A';
+
+  document.querySelectorAll('.font-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      document.querySelectorAll('.font-option').forEach(o => o.classList.remove('active'));
+      opt.classList.add('active');
+      selectedFont = opt.dataset.font;
+    });
+  });
+
+  document.querySelectorAll('#typeColors .pen-color').forEach(sw => {
+    sw.addEventListener('click', () => {
+      document.querySelectorAll('#typeColors .pen-color').forEach(s => s.classList.remove('active'));
+      sw.classList.add('active');
+      typeColor = sw.dataset.color;
+    });
+  });
+
+  function generateTypedSignature(){
+    const name = document.getElementById('nameInput').value.trim() || 'Your Name';
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = 700;
+    tempCanvas.height = 220;
+    const tctx = tempCanvas.getContext('2d');
+    tctx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
+    tctx.fillStyle = typeColor;
+    tctx.font = `90px ${selectedFont}`;
+    tctx.textAlign = 'center';
+    tctx.textBaseline = 'middle';
+    tctx.fillText(name, tempCanvas.width / 2, tempCanvas.height / 2);
+    return tempCanvas;
+  }
+
+  document.getElementById('downloadBtn').addEventListener('click', () => {
+    let sourceCanvas;
+
+    if (mode === 'draw'){
+      if (!hasDrawn){
+        showToast('Draw your signature first');
+        return;
+      }
+      sourceCanvas = canvas;
+    } else {
+      sourceCanvas = generateTypedSignature();
+    }
+
+    sourceCanvas.toBlob(blob => {
+      const url = URL.createObjectURL(blob);
+      document.getElementById('previewImg').src = url;
+      document.getElementById('previewResult').style.display = 'block';
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'signature.png';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      showToast('Download started');
+    }, 'image/png');
+  });
+</script>
+
+</body>
+</html>
