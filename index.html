@@ -403,6 +403,82 @@
     justify-content: center;
   }
 
+  .search-wrap{
+    position: relative;
+    z-index: 5;
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto 28px;
+  }
+  .search-box{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 14px;
+    padding: 13px 16px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .search-box:focus-within{
+    border-color: var(--teal);
+    box-shadow: 0 0 30px rgba(43,224,196,0.18);
+  }
+  .search-box svg{ width: 17px; height: 17px; color: var(--text-muted); flex-shrink: 0; }
+  .search-box input{
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+  }
+  .search-box input::placeholder{ color: var(--text-muted); }
+  .search-clear{
+    background: none; border: none; color: var(--text-muted); cursor: pointer;
+    width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .search-clear svg{ width: 13px; height: 13px; }
+  .search-clear:hover{ color: var(--teal); }
+
+  .search-results{
+    position: absolute;
+    top: calc(100% + 10px); left: 0; right: 0;
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 14px;
+    padding: 8px;
+    max-height: 340px;
+    overflow-y: auto;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.45);
+    display: none;
+    text-align: left;
+  }
+  .search-results.show{ display: block; }
+  .search-result-item{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 12px;
+    border-radius: 10px;
+  }
+  .search-result-item:hover{ background: var(--teal-dim); }
+  .search-result-item .sr-icon{
+    width: 34px; height: 34px; border-radius: 9px; background: var(--teal-dim); color: var(--teal);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .search-result-item .sr-icon svg{ width: 16px; height: 16px; }
+  .search-result-item .sr-text h4{
+    font-family: 'Quicksand', sans-serif; font-size: 0.85rem; font-weight: 600; color: var(--text);
+  }
+  .search-result-item .sr-text p{
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.64rem; color: var(--text-muted); text-transform: uppercase; margin-top: 2px;
+  }
+  .search-no-results{
+    padding: 20px 12px; text-align: center; color: var(--text-muted); font-family: 'Quicksand', sans-serif; font-size: 0.85rem;
+  }
+
   .btn-primary{
     background: var(--teal);
     color: #04231E;
@@ -653,6 +729,17 @@
   <h1>Find the tool.<br><span>Get it done.</span> No depths spared.</h1>
   <p>Megladon AI is a growing set of fast, free utilities — PDFs, images, QR codes and more — built to solve one task well and get out of your way.</p>
 
+  <div class="search-wrap" id="searchWrap">
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" id="toolSearchInput" placeholder="Search tools... e.g. 'merge pdf', 'resize image'" autocomplete="off">
+      <button class="search-clear" id="searchClearBtn" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="search-results" id="searchResults"></div>
+  </div>
+
   <div class="cta-row">
     <a href="#tools" class="btn-primary">Browse tools</a>
     <a href="about.html" class="btn-secondary">How it works</a>
@@ -878,6 +965,82 @@
 
   document.getElementById('sideShareBtn').addEventListener('click', shareSite);
   document.getElementById('headerShareBtn').addEventListener('click', shareSite);
+
+  // Tools search
+  const TOOLS_INDEX = [
+    { name: 'PDF to Word', desc: 'Document · PDF Tools', link: 'pdf-to-word/index.html', keywords: 'pdf word docx convert document editable' },
+    { name: 'PDF Merge', desc: 'Document · PDF Tools', link: 'pdf-merge/index.html', keywords: 'pdf merge combine join files' },
+    { name: 'PDF Split', desc: 'Document · PDF Tools', link: 'pdf-split/index.html', keywords: 'pdf split separate pages extract' },
+    { name: 'PDF Compress', desc: 'Document · PDF Tools', link: 'pdf-compress/index.html', keywords: 'pdf compress reduce size shrink' },
+    { name: 'JPG to PDF', desc: 'Document · PDF Tools', link: 'jpg-to-pdf/index.html', keywords: 'jpg png image to pdf convert' },
+    { name: 'PDF to JPG', desc: 'Document · PDF Tools', link: 'pdf-to-jpg/index.html', keywords: 'pdf to jpg image convert pages' },
+    { name: 'Image Compressor', desc: 'Image · Image Tools', link: 'image-compressor/index.html', keywords: 'image photo compress reduce size' },
+    { name: 'Background Remover', desc: 'Image · Image Tools', link: 'background-remover/index.html', keywords: 'background remove transparent photo' },
+    { name: 'Image Resizer', desc: 'Image · Image Tools', link: 'image-resizer/index.html', keywords: 'image resize dimensions pixels scale' },
+    { name: 'Image Format Converter', desc: 'Image · Image Tools', link: 'image-converter/index.html', keywords: 'jpg png webp convert format image' },
+    { name: 'Passport & CNIC Photo Maker', desc: 'Image · Image Tools', link: 'passport-photo-maker/index.html', keywords: 'passport cnic photo size visa id crop' },
+    { name: 'QR Code Generator', desc: 'Utility · Utility Tools', link: 'qr-generator/index.html', keywords: 'qr code generator link whatsapp' },
+    { name: 'Word & Character Counter', desc: 'Utility · Utility Tools', link: 'word-counter/index.html', keywords: 'word character counter count text' },
+    { name: 'Case Converter', desc: 'Utility · Utility Tools', link: 'case-converter/index.html', keywords: 'case converter uppercase lowercase title camel' },
+    { name: 'Signature Generator', desc: 'Utility · Utility Tools', link: 'signature-generator/index.html', keywords: 'signature generator draw sign name' },
+    { name: 'Zakat Calculator', desc: 'Finance · Finance Tools', link: 'zakat-calculator/index.html', keywords: 'zakat calculator finance gold silver nisab' },
+  ];
+
+  const searchInput = document.getElementById('toolSearchInput');
+  const searchResults = document.getElementById('searchResults');
+  const searchClearBtn = document.getElementById('searchClearBtn');
+  const searchWrap = document.getElementById('searchWrap');
+
+  const genericIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>';
+
+  function renderSearchResults(query){
+    const q = query.trim().toLowerCase();
+    if (!q){
+      searchResults.classList.remove('show');
+      return;
+    }
+    const matches = TOOLS_INDEX.filter(t =>
+      t.name.toLowerCase().includes(q) || t.keywords.includes(q)
+    ).slice(0, 8);
+
+    if (matches.length === 0){
+      searchResults.innerHTML = '<div class="search-no-results">No tools found for "' + query + '"</div>';
+    } else {
+      searchResults.innerHTML = matches.map(t => `
+        <a href="${t.link}" class="search-result-item">
+          <div class="sr-icon">${genericIcon}</div>
+          <div class="sr-text">
+            <h4>${t.name}</h4>
+            <p>${t.desc}</p>
+          </div>
+        </a>
+      `).join('');
+    }
+    searchResults.classList.add('show');
+  }
+
+  searchInput.addEventListener('input', () => {
+    searchClearBtn.style.display = searchInput.value ? 'flex' : 'none';
+    renderSearchResults(searchInput.value);
+  });
+  searchInput.addEventListener('focus', () => {
+    if (searchInput.value) renderSearchResults(searchInput.value);
+  });
+  searchClearBtn.addEventListener('click', () => {
+    searchInput.value = '';
+    searchClearBtn.style.display = 'none';
+    searchResults.classList.remove('show');
+    searchInput.focus();
+  });
+  document.addEventListener('click', (e) => {
+    if (!searchWrap.contains(e.target)) searchResults.classList.remove('show');
+  });
+  searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter'){
+      const first = searchResults.querySelector('.search-result-item');
+      if (first) window.location.href = first.getAttribute('href');
+    }
+  });
 
   // Tools dropdown menu
   const toolsDropdown = document.getElementById('toolsDropdown');
