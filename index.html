@@ -374,15 +374,20 @@
     z-index: 2;
   }
 
-  .hero h1{
+  .hero-line-1, .hero-line-2{
     position: relative;
     z-index: 2;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    letter-spacing: -0.02em;
     font-size: clamp(2.1rem, 4.8vw, 3.4rem);
     font-weight: 800;
     line-height: 1.1;
     max-width: 680px;
+    margin: 0 auto;
   }
-  .hero h1 span{ color: var(--teal); }
+  .hero-line-1{ margin-bottom: 20px; }
+  .hero-line-2{ margin-top: 0; }
+  .hero-line-2 span{ color: var(--teal); }
 
   .hero p{
     position: relative;
@@ -726,8 +731,7 @@
   </div>
 
   <div class="eyebrow mono">FREE &nbsp;·&nbsp; NO SIGN-UP &nbsp;·&nbsp; RUNS IN YOUR BROWSER</div>
-  <h1>Find the tool.<br><span>Get it done.</span> No depths spared.</h1>
-  <p>Megladon AI is a growing set of fast, free utilities — PDFs, images, QR codes and more — built to solve one task well and get out of your way.</p>
+  <h1 class="hero-line-1">Find the tool.</h1>
 
   <div class="search-wrap" id="searchWrap">
     <div class="search-box">
@@ -739,6 +743,12 @@
     </div>
     <div class="search-results" id="searchResults"></div>
   </div>
+
+  <div class="hero-line-2">
+    <span>Get it done.</span> No depths spared.
+  </div>
+
+  <p>Megladon AI is a growing set of fast, free utilities — PDFs, images, QR codes and more — built to solve one task well and get out of your way.</p>
 
   <div class="cta-row">
     <a href="#tools" class="btn-primary">Browse tools</a>
