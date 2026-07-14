@@ -162,6 +162,37 @@
     padding:10px 20px; border-radius:9px; font-size:0.82rem; opacity:0; pointer-events:none; transition:opacity .25s ease, transform .25s ease; z-index:300;}
   .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
 </style>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Do these QR codes expire?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No — the code is generated from your content directly, so it works for as long as the link or number stays valid."
+      }
+    },    {
+      "@type": "Question",
+      "name": "Is there a scan limit?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No limit — it's a static image, not a tracked redirect link."
+      }
+    },    {
+      "@type": "Question",
+      "name": "Can I use it for print/business cards?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes — increase the size slider before downloading for a sharper, print-ready result."
+      }
+    }
+  ]
+}
+</script>
 </head>
 <body>
 
@@ -207,7 +238,7 @@
       <div class="input-tab active" data-input="url">
         <div class="field">
           <label>Website URL</label>
-          <input type="text" id="urlInput" placeholder="https://example.com" value="https://megladonai.netlify.app/">
+          <input type="text" id="urlInput" placeholder="https://example.com" value="https://megladonai.com">
         </div>
       </div>
 

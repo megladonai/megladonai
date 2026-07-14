@@ -168,6 +168,44 @@
     padding:10px 20px; border-radius:9px; font-size:0.82rem; opacity:0; pointer-events:none; transition:opacity .25s ease, transform .25s ease; z-index:300;}
   .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
 </style>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is this really free?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes — no sign-up, no daily limits."
+      }
+    },    {
+      "@type": "Question",
+      "name": "Are my photos uploaded anywhere?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No — compression happens locally using your browser's Canvas API. Nothing is sent to a server."
+      }
+    },    {
+      "@type": "Question",
+      "name": "Will the quality look bad?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Use the slider to balance size vs quality — most photos look identical down to 70-80%."
+      }
+    },    {
+      "@type": "Question",
+      "name": "Does it support PNG transparency?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "PNGs are re-encoded as PNG to preserve transparency; JPGs stay JPG for maximum compression."
+      }
+    }
+  ]
+}
+</script>
 </head>
 <body>
 

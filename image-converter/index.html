@@ -7,6 +7,27 @@
 <meta name="description" content="Convert images between JPG, PNG, and WEBP online for free — no sign-up, works instantly in your browser.">
 <link rel="canonical" href="https://megladonai.netlify.app/image-converter/">
 <link rel="icon" type="image/png" href="../assets/logo.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Image Format Converter — Megladon AI">
+<meta property="og:description" content="Convert images between JPG, PNG, and WEBP online for free — no sign-up, works instantly in your browser.">
+<meta property="og:url" content="https://megladonai.netlify.app/image-converter/">
+<meta property="og:image" content="https://megladonai.netlify.app/assets/logo.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Image Format Converter — Megladon AI">
+<meta name="twitter:description" content="Convert images between JPG, PNG, and WEBP online for free — no sign-up, works instantly in your browser.">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Image Format Converter",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any (Web Browser)",
+  "url": "https://megladonai.netlify.app/image-converter/",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "description": "Convert images between JPG, PNG, and WEBP online for free — no sign-up, works instantly in your browser."
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
@@ -144,6 +165,44 @@
     padding:10px 20px; border-radius:9px; font-size:0.82rem; opacity:0; pointer-events:none; transition:opacity .25s ease, transform .25s ease; z-index:300;}
   .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
 </style>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is this really free?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes — no sign-up, no limit."
+      }
+    },    {
+      "@type": "Question",
+      "name": "Are my photos uploaded anywhere?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No — conversion happens locally using your browser's Canvas API."
+      }
+    },    {
+      "@type": "Question",
+      "name": "What's the difference between formats?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "JPG is best for photos and small file size. PNG supports transparency, ideal for logos. WEBP offers modern compression with good quality at a smaller size."
+      }
+    },    {
+      "@type": "Question",
+      "name": "Will converting to JPG lose transparency?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes — JPG doesn't support transparency, so transparent areas will become white. Use PNG or WEBP to keep transparency."
+      }
+    }
+  ]
+}
+</script>
 </head>
 <body>
 

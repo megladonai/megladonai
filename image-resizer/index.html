@@ -7,6 +7,27 @@
 <meta name="description" content="Resize any image online for free — set exact dimensions or scale by percentage, no sign-up, works in your browser.">
 <link rel="canonical" href="https://megladonai.netlify.app/image-resizer/">
 <link rel="icon" type="image/png" href="../assets/logo.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Image Resizer — Megladon AI">
+<meta property="og:description" content="Resize any image online for free — set exact dimensions or scale by percentage, no sign-up, works in your browser.">
+<meta property="og:url" content="https://megladonai.netlify.app/image-resizer/">
+<meta property="og:image" content="https://megladonai.netlify.app/assets/logo.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Image Resizer — Megladon AI">
+<meta name="twitter:description" content="Resize any image online for free — set exact dimensions or scale by percentage, no sign-up, works in your browser.">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Image Resizer",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any (Web Browser)",
+  "url": "https://megladonai.netlify.app/image-resizer/",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "description": "Resize any image online for free — set exact dimensions or scale by percentage, no sign-up, works in your browser."
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
@@ -159,6 +180,44 @@
     padding:10px 20px; border-radius:9px; font-size:0.82rem; opacity:0; pointer-events:none; transition:opacity .25s ease, transform .25s ease; z-index:300;}
   .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
 </style>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is this really free?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes — no sign-up, no limit."
+      }
+    },    {
+      "@type": "Question",
+      "name": "Are my photos uploaded anywhere?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No — resizing happens locally using your browser's Canvas API."
+      }
+    },    {
+      "@type": "Question",
+      "name": "What does the lock icon do?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "When locked, changing width automatically adjusts height to keep the same proportions, and vice versa."
+      }
+    },    {
+      "@type": "Question",
+      "name": "Will resizing reduce quality?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Making an image smaller keeps it sharp. Making it much larger than the original may look softer, since new pixels are estimated."
+      }
+    }
+  ]
+}
+</script>
 </head>
 <body>
 
