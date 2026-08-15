@@ -283,6 +283,7 @@
 
   @media (max-width: 900px){
     nav.links a{ display: none; }
+    .nav-dropdown{ display: none; }
     .header-share{ display: flex; }
     .hamburger{ display: flex; }
   }
@@ -372,6 +373,14 @@
     margin-bottom: 20px;
     position: relative;
     z-index: 2;
+    max-width: 92vw;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 480px){
+    .eyebrow{ font-size: 0.56rem; padding: 6px 10px; }
   }
 
   .hero-line-1, .hero-line-2{
@@ -680,6 +689,15 @@
     z-index: 300;
   }
   .toast.show{ opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* MOBILE-ZOOM-FIX */
+  @media (max-width: 640px){
+    input, textarea, select { font-size: 16px !important; }
+  }
+
+  /* OVERFLOW-SAFETY */
+  html, body { max-width: 100%; overflow-x: hidden; }
+  img, svg, canvas, video { max-width: 100%; }
 </style>
 </head>
 <body>
