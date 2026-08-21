@@ -866,10 +866,103 @@
 
   /* OVERFLOW-SAFETY */
   html, body { max-width: 100%; overflow-x: hidden; }
-  img, svg, canvas, video { max-width: 100%; }
+  img, svg, canvas, video { max-width: 100%; }  /* ---------- PRELOADER ---------- */
+  #preloader{
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 40%, rgba(43,224,196,0.09), transparent 60%),
+      var(--bg-deep);
+    transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), visibility 0.7s;
+  }
+  #preloader.hide{
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .preloader-inner{ text-align: center; }
+
+  .preloader-logo{
+    width: 62px; height: 62px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 0 auto 22px;
+    box-shadow: 0 0 30px rgba(43,224,196,0.35);
+    animation: preloaderPulse 1.8s ease-in-out infinite;
+  }
+  .preloader-logo img{ width: 100%; height: 100%; object-fit: cover; display: block; }
+  @keyframes preloaderPulse{
+    0%, 100%{ transform: scale(1); box-shadow: 0 0 26px rgba(43,224,196,0.3); }
+    50%{ transform: scale(1.07); box-shadow: 0 0 46px rgba(43,224,196,0.55); }
+  }
+
+  .preloader-name{
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: clamp(1.5rem, 4vw, 2.2rem);
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+  .preloader-name span{
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(14px);
+    animation: fadeSlideUp 0.55s cubic-bezier(0.16,1,0.3,1) forwards;
+  }
+
+  .preloader-tag{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--teal);
+    opacity: 0;
+    animation: fadeSlideUp 0.6s ease forwards;
+    animation-delay: 0.95s;
+    margin-bottom: 28px;
+  }
+
+  .preloader-bar{
+    width: 150px; height: 3px;
+    border-radius: 3px;
+    background: rgba(255,255,255,0.08);
+    margin: 0 auto;
+    overflow: hidden;
+  }
+  .preloader-bar-fill{
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, var(--teal), #7DD3FC);
+    border-radius: 3px;
+    animation: preloaderBarFill 2.6s cubic-bezier(0.65,0,0.35,1) forwards;
+  }
+  @keyframes preloaderBarFill{
+    0%{ width: 0%; }
+    100%{ width: 100%; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    #preloader{ transition: none; }
+  }
+
 </style>
 </head>
 <body>
+
+<div id="preloader">
+  <div class="preloader-inner">
+    <div class="preloader-logo"><img src="assets/logo.png" alt="Megladon AI logo"></div>
+    <div class="preloader-name">
+      <span style="animation-delay:0.05s;">M</span><span style="animation-delay:0.09s;">E</span><span style="animation-delay:0.13s;">G</span><span style="animation-delay:0.17s;">L</span><span style="animation-delay:0.21s;">A</span><span style="animation-delay:0.25s;">D</span><span style="animation-delay:0.29s;">O</span><span style="animation-delay:0.33s;">N</span>&nbsp;<span style="animation-delay:0.39s;">A</span><span style="animation-delay:0.43s;">I</span>
+    </div>
+    <div class="preloader-tag">Free Tools. Zero Friction.</div>
+    <div class="preloader-bar"><div class="preloader-bar-fill"></div></div>
+  </div>
+</div>
 
 <aside class="sidebar">
   <a href="index.html" class="side-logo" title="Megladon AI Home"><img src="assets/logo.png" alt="Megladon AI logo"></a>
@@ -1246,6 +1339,35 @@
 <div class="toast" id="toast">Link copied to clipboard</div>
 
 <script>
+  (function(){
+    var preloader = document.getElementById('preloader');
+    if (!preloader) return;
+    var MIN_DISPLAY = 2200;
+    var MAX_DISPLAY = 4000;
+    var start = Date.now();
+    document.body.style.overflow = 'hidden';
+    var hidden = false;
+
+    function hidePreloader(){
+      if (hidden) return;
+      hidden = true;
+      var elapsed = Date.now() - start;
+      var wait = Math.max(MIN_DISPLAY - elapsed, 0);
+      setTimeout(function(){
+        preloader.classList.add('hide');
+        document.body.style.overflow = '';
+        setTimeout(function(){ preloader.remove(); }, 750);
+      }, wait);
+    }
+
+    if (document.readyState === 'complete'){
+      hidePreloader();
+    } else {
+      window.addEventListener('load', hidePreloader);
+    }
+    setTimeout(hidePreloader, MAX_DISPLAY);
+  })();
+
   const hamburgerBtn = document.getElementById('hamburgerBtn');
   const closeMenuBtn = document.getElementById('closeMenuBtn');
   const mobileMenu = document.getElementById('mobileMenu');
