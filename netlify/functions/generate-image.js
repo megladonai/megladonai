@@ -34,7 +34,7 @@ exports.handler = async (event) => {
     return { statusCode: 400, body: JSON.stringify({ error: 'Prompt is too long. Keep it under 800 characters.' }) };
   }
 
-  const MODEL = process.env.GEMINI_IMAGE_MODEL || 'gemini-2.5-flash-image';
+  const MODEL = 'gemini-2.5-flash-image';
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
 
   try {
