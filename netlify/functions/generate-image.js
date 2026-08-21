@@ -45,6 +45,24 @@ exports.handler = async function (event) {
     );
 
     if (!apiResponse.ok) {
+      // Friendly, specific messages for the common failure cases
+      if (apiResponse.status === 402) {
+        return {
+          statusCode: 402,
+          body: JSON.stringify({
+            error: 'Credits khatam ho gaye hain. Please recharge your Stability AI account at platform.stability.ai to keep generating images.',
+          }),
+        };
+      }
+      if (apiResponse.status === 429) {
+        return {
+          statusCode: 429,
+          body: JSON.stringify({
+            error: 'Bohot zyada requests aa rahi hain. Thori der ruk kar dobara try karein.',
+          }),
+        };
+      }
+
       let errMsg = 'Image generation failed';
       try {
         const errJson = await apiResponse.json();
