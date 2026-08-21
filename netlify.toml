@@ -1,3 +1,6 @@
 [build]
   functions = "netlify/functions"
-  publish = "."
+
+# If you already have a netlify.toml at your project root with a
+# [build] publish = "..." line, just add the "functions" line
+# inside that same [build] block instead of creating a second one.

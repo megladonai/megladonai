@@ -4,448 +4,246 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI Text to Image Generator — Megladon AI</title>
-<meta name="description" content="Generate AI images from text prompts for free — describe what you want, get an image instantly, no sign-up.">
-<link rel="canonical" href="https://megladonai.netlify.app/text-to-image/">
+<meta name="description" content="Describe an image in words and get an AI-generated picture in seconds. Free, no sign-up.">
 <link rel="icon" type="image/png" href="../assets/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
-
-<meta property="og:type" content="website">
-<meta property="og:title" content="AI Text to Image Generator — Megladon AI">
-<meta property="og:description" content="Generate AI images from text prompts for free, no sign-up.">
-<meta property="og:url" content="https://megladonai.netlify.app/text-to-image/">
-<meta property="og:image" content="https://megladonai.netlify.app/assets/logo.png">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="AI Text to Image Generator — Megladon AI">
-<meta name="twitter:description" content="Generate AI images from text prompts for free, no sign-up.">
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  "name": "AI Text to Image Generator",
-  "applicationCategory": "MultimediaApplication",
-  "operatingSystem": "Any (Web Browser)",
-  "url": "https://megladonai.netlify.app/text-to-image/",
-  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-  "description": "Generate AI images from text prompts for free."
-}
-</script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    { "@type": "Question", "name": "Is this really free?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, generation is free to use. It runs on a shared daily quota, so during very busy periods it may briefly become unavailable until the quota resets." } },
-    { "@type": "Question", "name": "Are my prompts stored anywhere?", "acceptedAnswer": { "@type": "Answer", "text": "Prompts are sent securely to generate the image and are not stored or logged by Megladon AI." } },
-    { "@type": "Question", "name": "Can I use the generated images commercially?", "acceptedAnswer": { "@type": "Answer", "text": "Check the terms of the underlying AI provider for commercial usage rules, since they can change. Always review before using generated images in commercial work." } },
-    { "@type": "Question", "name": "Why did my generation fail?", "acceptedAnswer": { "@type": "Answer", "text": "This can happen if the daily free quota is reached, the prompt was flagged by safety filters, or there was a temporary connection issue. Try again in a moment or adjust your prompt." } }
-  ]
-}
-</script>
-
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#060B1A; --bg-deep:#030611; --panel:#0D1730; --panel-border:#1B2A4E;
-    --teal:#2BE0C4; --teal-dim:rgba(43,224,196,0.14); --bone:#E9E4D6;
-    --text:#EAF0F4; --text-muted:#7C8AAC; --sidebar-w:72px;
-    --error:#FF6B6B; --error-dim:rgba(255,107,107,0.12);
+    --bg: #05070F;
+    --bg-deep: #020308;
+    --teal: #2BE0C4;
+    --teal-dim: rgba(43,224,196,0.14);
+    --text: #EAF0F4;
+    --text-muted: #7C8AAC;
+    --glass-bg: rgba(255,255,255,0.045);
+    --glass-bg-hover: rgba(255,255,255,0.075);
+    --glass-border: rgba(255,255,255,0.10);
+    --glass-highlight: rgba(255,255,255,0.28);
   }
-  *{margin:0;padding:0;box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
-  body{background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; overflow-x:hidden; position:relative;}
-  body::after{
-    content:""; position:fixed; inset:0; pointer-events:none; z-index:100; opacity:0.035;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
   }
-  @media (prefers-reduced-motion: reduce){ *,*::before,*::after{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important;} }
-  h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif; letter-spacing:-0.02em;}
-  .mono{font-family:'IBM Plex Mono',monospace; letter-spacing:0.06em;}
-  a{color:inherit; text-decoration:none;}
-
-  .sidebar{position:fixed; top:0; left:0; bottom:0; width:var(--sidebar-w); background:var(--bg-deep); border-right:1px solid var(--panel-border);
-    display:flex; flex-direction:column; align-items:center; justify-content:space-between; padding:20px 0; z-index:60;}
-  .side-logo{width:32px; height:32px; border-radius:50%; overflow:hidden; display:block; box-shadow:0 0 14px rgba(43,224,196,0.35);}
-  .side-logo img{width:100%; height:100%; object-fit:cover; display:block;}
-  .side-nav{display:flex; flex-direction:column; gap:22px; align-items:center;}
-  .side-link{width:38px; height:38px; display:flex; align-items:center; justify-content:center; border-radius:10px; color:var(--text-muted); transition:background .15s,color .15s;}
-  .side-link svg{width:18px; height:18px;}
-  .side-link:hover, .side-link.active{background:var(--teal-dim); color:var(--teal);}
-  .side-share-btn{width:38px; height:38px; border-radius:10px; border:1px solid var(--panel-border); background:transparent; color:var(--text-muted); display:flex; align-items:center; justify-content:center; cursor:pointer;}
-  .side-share-btn:hover{border-color:var(--teal); color:var(--teal);}
-  .side-share-btn svg{width:16px; height:16px;}
-  @media (max-width:900px){ .sidebar{display:none;} }
-
-  .site-wrap{margin-left:var(--sidebar-w);}
-  @media (max-width:900px){ .site-wrap{margin-left:0;} }
-
-  header{position:sticky; top:0; z-index:50; display:flex; align-items:center; justify-content:space-between; padding:16px 5vw;
-    background:rgba(6,11,26,0.85); backdrop-filter:blur(8px); border-bottom:1px solid var(--panel-border);}
-  .logo{display:flex; align-items:center; gap:8px; font-size:0.9rem; font-weight:700;}
-  .logo-mark{width:24px; height:24px; border-radius:50%; overflow:hidden; box-shadow:0 0 14px rgba(43,224,196,0.35); display:none;}
-  .logo-mark img{width:100%; height:100%; object-fit:cover; display:block;}
-  @media (max-width:900px){ .logo-mark{display:block;} }
-  .back-link{display:flex; align-items:center; gap:6px; font-size:0.8rem; color:var(--text-muted); padding:8px 14px; border:1px solid var(--panel-border); border-radius:9px; transition:border-color .15s, color .15s;}
-  .back-link:hover{border-color:var(--teal); color:var(--teal);}
-  .back-link svg{width:14px; height:14px;}
-  nav.links{display:flex; align-items:center; gap:24px; font-size:0.78rem; color:var(--text-muted);}
-  nav.links a:hover{color:var(--teal);}
-  .header-right{display:flex; align-items:center; gap:14px;}
-  .header-share, .hamburger{display:none; width:34px; height:34px; border-radius:9px; border:1px solid var(--panel-border); background:transparent; color:var(--text-muted); align-items:center; justify-content:center; cursor:pointer;}
-  .header-share svg, .hamburger svg{width:15px; height:15px;}
-  @media (max-width:900px){ nav.links a{display:none;} .header-share{display:flex;} .hamburger{display:flex;} }
-
-  .mobile-menu{position:fixed; inset:0; background:var(--bg-deep); z-index:200; display:none; flex-direction:column; padding:24px 6vw;}
-  .mobile-menu.open{display:flex;}
-  .mobile-menu .close-btn{align-self:flex-end; width:36px; height:36px; border:1px solid var(--panel-border); border-radius:9px; background:transparent; color:var(--text); display:flex; align-items:center; justify-content:center; cursor:pointer;}
-  .mobile-menu a{font-family:'Bricolage Grotesque',sans-serif; font-size:1.5rem; font-weight:700; padding:14px 0; border-bottom:1px solid var(--panel-border);}
-  .mobile-menu a:hover{color:var(--teal);}
-
-  .tool-hero{padding:64px 6vw 20px; text-align:center;}
-  .eyebrow{font-size:0.62rem; color:var(--teal); text-transform:uppercase; background:var(--teal-dim); border:1px solid rgba(43,224,196,0.3); display:inline-block; padding:5px 12px; border-radius:100px; margin-bottom:18px;}
-  .tool-hero h1{font-size:clamp(1.7rem,3.6vw,2.5rem); margin-bottom:12px;}
-  .tool-hero p{color:var(--text-muted); font-size:0.95rem; max-width:480px; margin:0 auto;}
-
-  .tool-wrap{max-width:700px; margin:40px auto 0; padding:0 6vw;}
-
-  .prompt-card{background:var(--panel); border:1px solid var(--panel-border); border-radius:20px; padding:24px;}
-  .prompt-card textarea{
-    width:100%; min-height:100px; background:var(--bg-deep); border:1px solid var(--panel-border); border-radius:14px;
-    padding:16px; color:var(--text); font-family:'Inter',sans-serif; font-size:0.95rem; line-height:1.6; outline:none;
-    resize:vertical; transition:border-color .15s;
+  body::before{
+    content:"";
+    position: fixed; inset:0; z-index:-1;
+    background:
+      radial-gradient(ellipse 60% 45% at 15% 8%, rgba(43,224,196,0.07), transparent 60%),
+      radial-gradient(ellipse 55% 40% at 88% 12%, rgba(80,120,255,0.06), transparent 60%),
+      var(--bg);
   }
-  .prompt-card textarea:focus{ border-color: var(--teal); }
-  .prompt-card textarea::placeholder{ color: var(--text-muted); }
+  a{ color: inherit; text-decoration: none; }
+  h1{ font-family:'Bricolage Grotesque', sans-serif; letter-spacing:-0.02em; }
+  .mono{ font-family:'IBM Plex Mono', monospace; letter-spacing:0.06em; }
 
-  .char-count{ text-align:right; font-family:'IBM Plex Mono',monospace; font-size:0.7rem; color:var(--text-muted); margin-top:8px; }
+  header{
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 18px 6vw;
+  }
+  .logo{ display:flex; align-items:center; gap:8px; font-weight:700; font-size:0.9rem; }
+  .logo img{ width:26px; height:26px; border-radius:50%; box-shadow:0 0 14px rgba(43,224,196,0.35); }
+  .back-link{ font-size:0.8rem; color: var(--text-muted); display:flex; align-items:center; gap:6px; }
+  .back-link:hover{ color: var(--teal); }
+  .back-link svg{ width:14px; height:14px; }
 
-  .style-row{display:flex; flex-wrap:wrap; gap:8px; margin-top:16px;}
-  .style-chip{background:var(--bg-deep); border:1px solid var(--panel-border); border-radius:100px; padding:8px 16px; font-family:'Quicksand',sans-serif; font-size:0.8rem; color:var(--text-muted); cursor:pointer; transition:border-color .15s, color .15s, background .15s;}
-  .style-chip:hover{ border-color: var(--teal); color: var(--teal); }
-  .style-chip.active{ border-color: var(--teal); color: var(--teal); background: var(--teal-dim); }
+  main{
+    flex:1;
+    display:flex; flex-direction:column; align-items:center;
+    padding: 30px 6vw 80px;
+  }
 
-  .action-row{margin-top:20px;}
+  .eyebrow{
+    font-size: 0.62rem; color: var(--teal); text-transform: uppercase;
+    background: var(--glass-bg); border:1px solid var(--glass-border);
+    padding: 5px 12px; border-radius: 100px; margin-bottom: 18px;
+  }
+  h1{ font-size: clamp(1.6rem, 3.4vw, 2.3rem); text-align:center; margin-bottom: 10px; }
+  main > p{ color: var(--text-muted); max-width: 480px; text-align:center; margin-bottom: 34px; font-size: 0.95rem; line-height:1.6; }
+
+  .panel{
+    width: 100%; max-width: 640px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(18px) saturate(150%);
+    -webkit-backdrop-filter: blur(18px) saturate(150%);
+    border: 1px solid var(--glass-border);
+    box-shadow: inset 0 1px 0 var(--glass-highlight), 0 8px 32px rgba(0,0,0,0.25);
+    border-radius: 18px;
+    padding: 26px;
+  }
+
+  textarea{
+    width: 100%; min-height: 90px; resize: vertical;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 14px;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.92rem;
+    outline: none;
+    transition: border-color 0.2s ease;
+  }
+  textarea:focus{ border-color: var(--teal); }
+  textarea::placeholder{ color: var(--text-muted); }
+
+  .row{ display:flex; gap:12px; margin-top:16px; flex-wrap:wrap; }
+
   .btn-primary{
-    width:100%; background:var(--teal); color:#04231E; font-weight:600; padding:15px 26px; border-radius:11px; font-size:0.92rem; border:none; cursor:pointer;
-    box-shadow:0 0 26px rgba(43,224,196,0.32); transition:transform .15s ease, box-shadow .15s ease; display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    background: var(--teal); color:#04231E; font-weight:600;
+    padding: 13px 26px; border-radius: 9px; font-size:0.92rem;
+    border:none; cursor:pointer;
+    box-shadow: 0 0 26px rgba(43,224,196,0.32);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
   }
-  .btn-primary:hover{transform:translateY(-2px); box-shadow:0 0 36px rgba(43,224,196,0.48);}
-  .btn-primary:disabled{ opacity:0.55; cursor:not-allowed; transform:none; box-shadow:none; }
-  .btn-ghost{background:transparent; color:var(--text-muted); border:1px solid var(--panel-border); padding:13px 22px; border-radius:9px; font-size:0.85rem; cursor:pointer; transition:border-color .15s, color .15s;}
-  .btn-ghost:hover{border-color:var(--teal); color:var(--teal);}
+  .btn-primary:hover{ transform: translateY(-2px); box-shadow: 0 0 36px rgba(43,224,196,0.48); }
+  .btn-primary:disabled{ opacity:0.5; cursor:not-allowed; transform:none; box-shadow:none; }
 
-  .result-wrap{ margin-top:24px; }
-  .result-box{
-    display:none; background:var(--panel); border:1px solid var(--panel-border); border-radius:20px; padding:16px;
-    text-align:center;
+  .btn-secondary{
+    border: 1px solid var(--glass-border); color: var(--text);
+    padding: 13px 26px; border-radius: 9px; font-size:0.92rem;
+    background: transparent; cursor:pointer;
   }
-  .result-box img{ width:100%; border-radius:14px; display:block; }
-  .result-actions{ display:flex; gap:10px; justify-content:center; margin-top:16px; flex-wrap:wrap; }
+  .btn-secondary:hover{ border-color: var(--teal); background: rgba(43,224,196,0.06); }
 
-  .loading-box{
-    display:none; background:var(--panel); border:1px solid var(--panel-border); border-radius:20px; padding:60px 24px; text-align:center;
+  .result-wrap{
+    width: 100%; max-width: 640px; margin-top: 22px;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
   }
-  .sonar-loader{width:64px; height:64px; margin:0 auto 18px; position:relative;}
-  .sonar-loader::before, .sonar-loader::after{ content:""; position:absolute; inset:0; border-radius:50%; border:2px solid var(--teal); opacity:0; animation:sonarPulse 2s ease-out infinite; }
-  .sonar-loader::after{ animation-delay:1s; }
-  .sonar-loader .dot{position:absolute; inset:35%; background:var(--teal); border-radius:50%; box-shadow:0 0 20px rgba(43,224,196,0.7);}
-  @keyframes sonarPulse{ 0%{transform:scale(0.3); opacity:0.8;} 100%{transform:scale(1.6); opacity:0;} }
-  .loading-box h3{font-size:1.02rem; margin-bottom:6px;}
-  .loading-box p{color:var(--text-muted); font-size:0.85rem; font-family:'Quicksand',sans-serif;}
+  .result-wrap.show{ display:flex; }
+  .result-wrap img{
+    width: 100%; border-radius: 16px;
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+  }
 
-  .error-card{display:none; background:var(--error-dim); border:1px solid rgba(255,107,107,0.4); border-radius:16px; padding:22px; text-align:center; margin-top:20px;}
-  .error-card svg{width:30px; height:30px; color:var(--error); margin-bottom:8px;}
-  .error-card h3{font-size:0.92rem; margin-bottom:6px;}
-  .error-card p{color:var(--text-muted); font-size:0.82rem; font-family:'Quicksand',sans-serif;}
+  .status{
+    margin-top: 18px; font-size: 0.85rem; color: var(--text-muted);
+    display:none; align-items:center; gap:10px;
+  }
+  .status.show{ display:flex; }
+  .spinner{
+    width:16px; height:16px; border-radius:50%;
+    border: 2px solid var(--glass-border); border-top-color: var(--teal);
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin{ to{ transform: rotate(360deg); } }
 
-  .setup-notice{ background: var(--teal-dim); border:1px solid rgba(43,224,196,0.3); border-radius:14px; padding:16px 18px; margin-bottom:20px; font-family:'Quicksand',sans-serif; font-size:0.82rem; color: var(--text); display:none; }
-  .setup-notice strong{ color: var(--teal); }
+  .error-box{
+    margin-top:18px; padding:12px 16px; border-radius:10px;
+    background: rgba(255,80,80,0.08); border:1px solid rgba(255,80,80,0.3);
+    color:#ff9b9b; font-size:0.85rem; display:none; max-width:640px; width:100%;
+  }
+  .error-box.show{ display:block; }
 
-  .how{max-width:900px; margin:90px auto 0; padding:0 6vw; text-align:center;}
-  .how h2{font-size:1.5rem; margin-bottom:40px;}
-  .how-steps{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
-  @media (max-width:700px){ .how-steps{grid-template-columns:1fr;} }
-  .how-step{background:var(--panel); border:1px solid var(--panel-border); border-radius:16px; padding:26px 20px;}
-  .how-step .num{width:32px; height:32px; border-radius:50%; background:var(--teal-dim); color:var(--teal); display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono',monospace; font-size:0.85rem; margin:0 auto 14px;}
-  .how-step h4{font-family:'Quicksand',sans-serif; font-size:1rem; margin-bottom:6px;}
-  .how-step p{font-family:'Quicksand',sans-serif; color:var(--text-muted); font-size:0.82rem;}
-
-  .faq{max-width:700px; margin:80px auto 100px; padding:0 6vw;}
-  .faq h2{font-size:1.5rem; text-align:center; margin-bottom:32px;}
-  .faq-item{border:1px solid var(--panel-border); border-radius:14px; margin-bottom:12px; overflow:hidden; background:var(--panel);}
-  .faq-q{width:100%; background:transparent; border:none; color:var(--text); text-align:left; padding:18px 20px; font-family:'Quicksand',sans-serif; font-weight:600; font-size:0.92rem; cursor:pointer; display:flex; justify-content:space-between; align-items:center;}
-  .faq-q svg{width:16px; height:16px; transition:transform .25s ease; flex-shrink:0; color:var(--teal);}
-  .faq-item.open .faq-q svg{transform:rotate(180deg);}
-  .faq-a{max-height:0; overflow:hidden; transition:max-height .3s ease;}
-  .faq-a p{padding:0 20px 18px; color:var(--text-muted); font-size:0.85rem; font-family:'Quicksand',sans-serif; line-height:1.6;}
-
-  footer{padding:30px 6vw; border-top:1px solid var(--panel-border); display:flex; justify-content:space-between; flex-wrap:wrap; gap:14px; color:var(--text-muted); font-size:0.8rem;}
-  .footer-links{display:flex; gap:18px;}
-  .footer-links a:hover{color:var(--teal);}
-
-  .toast{position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--panel); border:1px solid var(--teal); color:var(--text);
-    padding:10px 20px; border-radius:9px; font-size:0.82rem; opacity:0; pointer-events:none; transition:opacity .25s ease, transform .25s ease; z-index:300;}
-  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
-
-  @media (max-width: 640px){ input, textarea, select { font-size: 16px !important; } }
+  footer{
+    text-align:center; padding: 24px; color: var(--text-muted); font-size:0.78rem;
+  }
 </style>
 </head>
 <body>
 
-<aside class="sidebar">
-  <a href="../index.html" class="side-logo" title="Home"><img src="../assets/logo.png" alt="Megladon AI logo"></a>
-  <nav class="side-nav">
-    <a href="../index.html" class="side-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></a>
-    <a href="../index.html#cat-utility" class="side-link active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></a>
-    <a href="../about.html" class="side-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg></a>
-    <a href="../contact.html" class="side-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M22 6l-10 7L2 6"/></svg></a>
-  </nav>
-  <button class="side-share-btn" onclick="shareTool()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></button>
-</aside>
+<header>
+  <a href="../index.html" class="logo">
+    <img src="../assets/logo.png" alt="Megladon AI logo">
+    MEGLADON AI
+  </a>
+  <a href="../index.html#cat-ai" class="back-link">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    Back to Tools
+  </a>
+</header>
 
-<div class="site-wrap">
-  <header>
-    <a href="../index.html" class="logo"><div class="logo-mark"><img src="../assets/logo.png" alt="Megladon AI logo"></div>MEGLADON AI</a>
-    <nav class="links">
-      <a href="../index.html#cat-utility" class="back-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>All tools</a>
-      <a href="../about.html">About</a>
-      <a href="../contact.html">Contact</a>
-    </nav>
-    <div class="header-right">
-      <button class="header-share" onclick="shareTool()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></button>
-      <button class="hamburger" id="hamburgerBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+<main>
+  <div class="eyebrow mono">FREE · NO SIGN-UP · AI POWERED</div>
+  <h1>AI Text to Image Generator</h1>
+  <p>Describe what you want to see, and let AI turn your words into a picture.</p>
+
+  <div class="panel">
+    <textarea id="promptInput" placeholder="e.g. a cat wearing sunglasses, riding a skateboard, digital art"></textarea>
+    <div class="row">
+      <button class="btn-primary" id="generateBtn">Generate Image</button>
+      <button class="btn-secondary" id="clearBtn">Clear</button>
     </div>
-  </header>
-
-  <section class="tool-hero">
-    <span class="eyebrow mono">AI TOOL</span>
-    <h1>AI Text to Image Generator</h1>
-    <p>Describe what you want to see, and get an AI-generated image in seconds.</p>
-  </section>
-
-  <div class="tool-wrap">
-
-    <div class="setup-notice" id="setupNotice">
-      <strong>Heads up:</strong> This tool needs a one-time setup on the backend (API key) before it will work. See the message below if generation fails.
+    <div class="status" id="statusBox">
+      <div class="spinner"></div>
+      <span>Generating your image, please wait...</span>
     </div>
-
-    <div class="prompt-card">
-      <textarea id="promptInput" placeholder="e.g. A cozy coffee shop in the rain, warm lighting, cinematic, highly detailed" maxlength="800"></textarea>
-      <div class="char-count"><span id="charCount">0</span> / 800</div>
-
-      <div class="style-row" id="styleRow">
-        <div class="style-chip" data-style="">No style</div>
-        <div class="style-chip" data-style=", photorealistic, 4k, sharp focus">Photorealistic</div>
-        <div class="style-chip" data-style=", digital painting, concept art, vibrant colors">Digital Art</div>
-        <div class="style-chip" data-style=", 3D render, octane render, studio lighting">3D Render</div>
-        <div class="style-chip" data-style=", minimalist, flat design, clean vector">Minimalist</div>
-        <div class="style-chip" data-style=", anime style, cel shaded">Anime</div>
-      </div>
-
-      <div class="action-row">
-        <button class="btn-primary" id="generateBtn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.2H22l-6 4.4 2.4 7.2L12 16.4l-6.4 4.4 2.4-7.2-6-4.4h7.6z"/></svg>
-          Generate Image
-        </button>
-      </div>
-    </div>
-
-    <div class="result-wrap">
-      <div class="loading-box" id="loadingBox">
-        <div class="sonar-loader"><div class="dot"></div></div>
-        <h3>Generating your image...</h3>
-        <p>This usually takes 5-15 seconds.</p>
-      </div>
-
-      <div class="result-box" id="resultBox">
-        <img id="resultImg" alt="AI generated image">
-        <div class="result-actions">
-          <button class="btn-primary" id="downloadBtn" style="width:auto;">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
-            Download
-          </button>
-          <button class="btn-ghost" id="regenerateBtn">Generate again</button>
-        </div>
-      </div>
-
-      <div class="error-card" id="errorCard">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
-        <h3 id="errorTitle">Generation failed</h3>
-        <p id="errorMsg">Something went wrong. Please try again.</p>
-      </div>
-    </div>
-
+    <div class="error-box" id="errorBox"></div>
   </div>
 
-  <section class="how">
-    <h2>How it works</h2>
-    <div class="how-steps">
-      <div class="how-step"><div class="num">1</div><h4>Describe it</h4><p>Type what you want to see, in as much detail as you like.</p></div>
-      <div class="how-step"><div class="num">2</div><h4>Pick a style</h4><p>Optionally choose a visual style to guide the result.</p></div>
-      <div class="how-step"><div class="num">3</div><h4>Generate & download</h4><p>Get your AI image in seconds, ready to save.</p></div>
-    </div>
-  </section>
+  <div class="result-wrap" id="resultWrap">
+    <img id="resultImage" alt="Generated image">
+    <a class="btn-secondary" id="downloadBtn" download="megladon-ai-image.png">Download Image</a>
+  </div>
+</main>
 
-  <section class="faq">
-    <h2>Frequently asked</h2>
-    <div class="faq-item">
-      <button class="faq-q">Is this really free? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
-      <div class="faq-a"><p>Yes, generation is free to use. It runs on a shared daily quota, so during very busy periods it may briefly become unavailable until the quota resets.</p></div>
-    </div>
-    <div class="faq-item">
-      <button class="faq-q">Are my prompts stored anywhere? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
-      <div class="faq-a"><p>Prompts are sent securely to generate the image and are not stored or logged by Megladon AI.</p></div>
-    </div>
-    <div class="faq-item">
-      <button class="faq-q">Can I use the generated images commercially? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
-      <div class="faq-a"><p>Check the terms of the underlying AI provider for commercial usage rules, since they can change. Always review before using generated images in commercial work.</p></div>
-    </div>
-    <div class="faq-item">
-      <button class="faq-q">Why did my generation fail? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
-      <div class="faq-a"><p>This can happen if the daily free quota is reached, the prompt was flagged by safety filters, or there was a temporary connection issue. Try again in a moment or adjust your prompt.</p></div>
-    </div>
-  </section>
-
-  <footer>
-    <div>© 2026 Megladon AI. Built for speed.</div>
-    <div class="footer-links mono">
-      <a href="../about.html">About</a>
-      <a href="../contact.html">Contact</a>
-      <a href="../privacy.html">Privacy</a>
-    </div>
-  </footer>
-</div>
-
-<div class="mobile-menu" id="mobileMenu">
-  <button class="close-btn" id="closeMenuBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
-  <a href="../index.html">Home</a>
-  <a href="../index.html#cat-utility">Tools</a>
-  <a href="../about.html">About</a>
-  <a href="../contact.html">Contact</a>
-</div>
-
-<div class="toast" id="toast">Download started</div>
+<footer>© 2026 Megladon AI. Built for speed.</footer>
 
 <script>
-  const hamburgerBtn = document.getElementById('hamburgerBtn');
-  const closeMenuBtn = document.getElementById('closeMenuBtn');
-  const mobileMenu = document.getElementById('mobileMenu');
-  hamburgerBtn.addEventListener('click', () => mobileMenu.classList.add('open'));
-  closeMenuBtn.addEventListener('click', () => mobileMenu.classList.remove('open'));
-
-  function showToast(msg){
-    const toast = document.getElementById('toast');
-    toast.textContent = msg;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 2200);
-  }
-  function shareTool(){
-    const shareData = { title: 'AI Text to Image Generator — Megladon AI', text: 'Free AI image generator, no sign-up.', url: window.location.href };
-    if (navigator.share){ navigator.share(shareData).catch(()=>{}); }
-    else { navigator.clipboard.writeText(shareData.url).then(()=>showToast('Link copied to clipboard')).catch(()=>showToast('Could not copy link')); }
-  }
-
-  document.querySelectorAll('.faq-q').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const item = btn.parentElement;
-      const answer = item.querySelector('.faq-a');
-      const isOpen = item.classList.contains('open');
-      document.querySelectorAll('.faq-item').forEach(i => { i.classList.remove('open'); i.querySelector('.faq-a').style.maxHeight = null; });
-      if (!isOpen){ item.classList.add('open'); answer.style.maxHeight = answer.scrollHeight + 'px'; }
-    });
-  });
-
   const promptInput = document.getElementById('promptInput');
-  const charCount = document.getElementById('charCount');
   const generateBtn = document.getElementById('generateBtn');
-  const loadingBox = document.getElementById('loadingBox');
-  const resultBox = document.getElementById('resultBox');
-  const errorCard = document.getElementById('errorCard');
-  const resultImg = document.getElementById('resultImg');
+  const clearBtn = document.getElementById('clearBtn');
+  const statusBox = document.getElementById('statusBox');
+  const errorBox = document.getElementById('errorBox');
+  const resultWrap = document.getElementById('resultWrap');
+  const resultImage = document.getElementById('resultImage');
   const downloadBtn = document.getElementById('downloadBtn');
-  const regenerateBtn = document.getElementById('regenerateBtn');
-
-  let selectedStyle = '';
-  let lastImageDataUrl = null;
-
-  promptInput.addEventListener('input', () => {
-    charCount.textContent = promptInput.value.length;
-  });
-
-  document.querySelectorAll('.style-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      document.querySelectorAll('.style-chip').forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
-      selectedStyle = chip.dataset.style;
-    });
-  });
-
-  function showError(title, msg){
-    loadingBox.style.display = 'none';
-    resultBox.style.display = 'none';
-    errorCard.style.display = 'block';
-    document.getElementById('errorTitle').textContent = title;
-    document.getElementById('errorMsg').textContent = msg;
-  }
 
   async function generateImage(){
-    const basePrompt = promptInput.value.trim();
-    if (!basePrompt){
-      showToast('Please describe an image first');
+    const prompt = promptInput.value.trim();
+    errorBox.classList.remove('show');
+    errorBox.textContent = '';
+
+    if (!prompt){
+      errorBox.textContent = 'Please describe what image you want first.';
+      errorBox.classList.add('show');
       return;
     }
 
-    const fullPrompt = basePrompt + selectedStyle;
-
     generateBtn.disabled = true;
-    resultBox.style.display = 'none';
-    errorCard.style.display = 'none';
-    loadingBox.style.display = 'block';
+    statusBox.classList.add('show');
+    resultWrap.classList.remove('show');
 
     try {
-      const res = await fetch('/.netlify/functions/generate-image', {
+      const res = await fetch('/.netlify/functions/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: fullPrompt })
+        body: JSON.stringify({ prompt }),
       });
 
       const data = await res.json();
 
-      if (!res.ok || !data.image){
-        throw new Error(data.error || 'Generation failed.');
+      if (!res.ok){
+        throw new Error(data.error || 'Something went wrong. Please try again.');
       }
 
-      lastImageDataUrl = data.image;
-      resultImg.src = data.image;
-      loadingBox.style.display = 'none';
-      resultBox.style.display = 'block';
-
+      resultImage.src = data.image;
+      downloadBtn.href = data.image;
+      resultWrap.classList.add('show');
     } catch (err){
-      console.error(err);
-      const msg = err.message || 'Something went wrong.';
-      if (msg.includes('GEMINI_API_KEY') || msg.includes('Server is missing')){
-        showError('Setup needed', 'The site owner needs to add a GEMINI_API_KEY in Netlify settings for this tool to work.');
-      } else {
-        showError('Generation failed', msg);
-      }
+      errorBox.textContent = err.message || 'Something went wrong. Please try again.';
+      errorBox.classList.add('show');
     } finally {
       generateBtn.disabled = false;
+      statusBox.classList.remove('show');
     }
   }
 
   generateBtn.addEventListener('click', generateImage);
-  regenerateBtn.addEventListener('click', generateImage);
-
-  downloadBtn.addEventListener('click', () => {
-    if (!lastImageDataUrl) return;
-    const a = document.createElement('a');
-    a.href = lastImageDataUrl;
-    a.download = 'megladon-ai-image.png';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    showToast('Download started');
+  clearBtn.addEventListener('click', () => {
+    promptInput.value = '';
+    resultWrap.classList.remove('show');
+    errorBox.classList.remove('show');
   });
 </script>
 

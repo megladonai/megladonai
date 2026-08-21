@@ -1,86 +1,69 @@
-// Netlify serverless function - keeps the Gemini API key secret on the server side.
-// The browser calls this function; this function calls Google's API using the
-// secret key stored in Netlify's environment variables (never exposed to the client).
+// netlify/functions/generate.js
+// This runs on Netlify's servers (NOT in the browser), so the API key stays hidden.
 
-exports.handler = async (event) => {
-  // Only allow POST requests
+exports.handler = async function (event) {
   if (event.httpMethod !== 'POST') {
-    return {
-      statusCode: 405,
-      body: JSON.stringify({ error: 'Method not allowed. Use POST.' })
-    };
-  }
-
-  const API_KEY = process.env.GEMINI_API_KEY;
-  if (!API_KEY) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: 'Server is missing GEMINI_API_KEY. Add it in Netlify environment variables.' })
-    };
+    return { statusCode: 405, body: JSON.stringify({ error: 'Method not allowed' }) };
   }
 
   let prompt;
   try {
-    const body = JSON.parse(event.body);
+    const body = JSON.parse(event.body || '{}');
     prompt = (body.prompt || '').trim();
   } catch (e) {
-    return { statusCode: 400, body: JSON.stringify({ error: 'Invalid request body.' }) };
+    return { statusCode: 400, body: JSON.stringify({ error: 'Invalid request body' }) };
   }
 
   if (!prompt) {
-    return { statusCode: 400, body: JSON.stringify({ error: 'Please provide a text prompt.' }) };
-  }
-  if (prompt.length > 800) {
-    return { statusCode: 400, body: JSON.stringify({ error: 'Prompt is too long. Keep it under 800 characters.' }) };
+    return { statusCode: 400, body: JSON.stringify({ error: 'Prompt is required' }) };
   }
 
-  const MODEL = 'gemini-2.5-flash-image';
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
+  const apiKey = process.env.STABILITY_API_KEY;
+  if (!apiKey) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: 'Server is missing STABILITY_API_KEY. Add it in Netlify > Site settings > Environment variables.' }),
+    };
+  }
 
   try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-goog-api-key': API_KEY
-      },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { responseModalities: ['IMAGE'] }
-      })
-    });
+    const form = new FormData();
+    form.append('prompt', prompt);
+    form.append('output_format', 'png');
+    form.append('aspect_ratio', '1:1');
 
-    const data = await response.json();
+    const apiResponse = await fetch(
+      'https://api.stability.ai/v2beta/stable-image/generate/core',
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          Accept: 'image/*',
+        },
+        body: form,
+      }
+    );
 
-    if (!response.ok) {
-      const message = (data && data.error && data.error.message) || 'The AI service returned an error.';
-      return { statusCode: response.status, body: JSON.stringify({ error: message }) };
+    if (!apiResponse.ok) {
+      let errMsg = 'Image generation failed';
+      try {
+        const errJson = await apiResponse.json();
+        errMsg = errJson.errors ? errJson.errors.join(', ') : (errJson.message || errMsg);
+      } catch (e) {
+        errMsg = await apiResponse.text();
+      }
+      return { statusCode: apiResponse.status, body: JSON.stringify({ error: errMsg }) };
     }
 
-    const parts = data?.candidates?.[0]?.content?.parts || [];
-    const imagePart = parts.find(p => p.inlineData || p.inline_data);
-    const inline = imagePart && (imagePart.inlineData || imagePart.inline_data);
-
-    if (!inline || !inline.data) {
-      return {
-        statusCode: 502,
-        body: JSON.stringify({ error: 'The AI did not return an image. Try rephrasing your prompt.' })
-      };
-    }
-
-    const mimeType = inline.mimeType || inline.mime_type || 'image/png';
+    const arrayBuffer = await apiResponse.arrayBuffer();
+    const base64 = Buffer.from(arrayBuffer).toString('base64');
 
     return {
       statusCode: 200,
-      body: JSON.stringify({
-        image: `data:${mimeType};base64,${inline.data}`
-      })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image: `data:image/png;base64,${base64}` }),
     };
-
   } catch (err) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: 'Could not reach the AI service. Please try again in a moment.' })
-    };
+    return { statusCode: 500, body: JSON.stringify({ error: err.message || 'Unexpected server error' }) };
   }
 };
