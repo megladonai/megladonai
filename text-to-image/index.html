@@ -44,6 +44,8 @@
   .mono{ font-family:'IBM Plex Mono', monospace; letter-spacing:0.06em; }
 
   header{
+    position: relative;
+    z-index: 2;
     display:flex; align-items:center; justify-content:space-between;
     padding: 18px 6vw;
   }
@@ -54,9 +56,48 @@
   .back-link svg{ width:14px; height:14px; }
 
   main{
+    position: relative;
+    z-index: 2;
     flex:1;
     display:flex; flex-direction:column; align-items:center;
     padding: 30px 6vw 80px;
+  }
+
+  /* ---------- FLOATING BACKGROUND GALLERY ---------- */
+  .floating-gallery{
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .floating-gallery::after{
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 65% 55% at 50% 42%, rgba(5,7,15,0.55), rgba(5,7,15,0.88) 68%),
+      var(--bg);
+  }
+  .float-pic{
+    position: absolute;
+    border-radius: 16px;
+    object-fit: cover;
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 20px 45px rgba(0,0,0,0.55);
+    opacity: 0.4;
+    filter: saturate(0.95);
+    animation: floatCard ease-in-out infinite;
+  }
+  @keyframes floatCard{
+    0%, 100%{ transform: translateY(0) rotate(var(--r, 0deg)); }
+    50%{ transform: translateY(-16px) rotate(var(--r, 0deg)); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .float-pic{ animation: none; }
+  }
+  @media (max-width: 900px){
+    .float-pic.hide-mobile{ display: none; }
   }
 
   .eyebrow{
@@ -148,11 +189,28 @@
   .error-box svg{ width:16px; height:16px; flex-shrink:0; margin-top:1px; }
 
   footer{
+    position: relative;
+    z-index: 2;
     text-align:center; padding: 24px; color: var(--text-muted); font-size:0.78rem;
   }
 </style>
 </head>
 <body>
+
+<div class="floating-gallery" aria-hidden="true">
+  <img class="float-pic" loading="lazy" alt="" style="top:6%; left:5%; width:150px; height:150px; --r:-6deg; animation-duration:9s;" src="https://image.pollinations.ai/prompt/vibrant%20abstract%20digital%20art%20colorful%20smoke?width=320&height=320&seed=101&nologo=true">
+  <img class="float-pic" loading="lazy" alt="" style="top:12%; right:7%; width:170px; height:170px; --r:5deg; animation-duration:11s; animation-delay:0.6s;" src="https://image.pollinations.ai/prompt/cyberpunk%20city%20street%20neon%20at%20night?width=320&height=320&seed=102&nologo=true">
+  <img class="float-pic hide-mobile" loading="lazy" alt="" style="top:30%; left:2%; width:130px; height:130px; --r:4deg; animation-duration:8s; animation-delay:1.1s;" src="https://image.pollinations.ai/prompt/fantasy%20dragon%20flying%20over%20mountains%20digital%20art?width=320&height=320&seed=103&nologo=true">
+  <img class="float-pic" loading="lazy" alt="" style="top:26%; right:3%; width:150px; height:150px; --r:-4deg; animation-duration:10s; animation-delay:0.3s;" src="https://image.pollinations.ai/prompt/astronaut%20floating%20in%20space%20nebula%20digital%20art?width=320&height=320&seed=104&nologo=true">
+  <img class="float-pic hide-mobile" loading="lazy" alt="" style="bottom:26%; left:4%; width:160px; height:160px; --r:6deg; animation-duration:12s; animation-delay:1.4s;" src="https://image.pollinations.ai/prompt/portrait%20of%20a%20fox%20in%20fantasy%20forest%20digital%20art?width=320&height=320&seed=105&nologo=true">
+  <img class="float-pic" loading="lazy" alt="" style="bottom:30%; right:5%; width:140px; height:140px; --r:-5deg; animation-duration:9.5s; animation-delay:0.9s;" src="https://image.pollinations.ai/prompt/surreal%20floating%20islands%20digital%20art?width=320&height=320&seed=106&nologo=true">
+  <img class="float-pic hide-mobile" loading="lazy" alt="" style="bottom:8%; left:9%; width:150px; height:150px; --r:3deg; animation-duration:10.5s; animation-delay:0.4s;" src="https://image.pollinations.ai/prompt/futuristic%20sports%20car%20concept%20art?width=320&height=320&seed=107&nologo=true">
+  <img class="float-pic" loading="lazy" alt="" style="bottom:6%; right:9%; width:160px; height:160px; --r:-3deg; animation-duration:11.5s; animation-delay:1.2s;" src="https://image.pollinations.ai/prompt/underwater%20coral%20reef%20fantasy%20art?width=320&height=320&seed=108&nologo=true">
+  <img class="float-pic hide-mobile" loading="lazy" alt="" style="top:4%; left:38%; width:120px; height:120px; --r:5deg; animation-duration:8.5s; animation-delay:0.7s;" src="https://image.pollinations.ai/prompt/majestic%20lion%20digital%20painting?width=320&height=320&seed=109&nologo=true">
+  <img class="float-pic hide-mobile" loading="lazy" alt="" style="bottom:2%; left:42%; width:120px; height:120px; --r:-4deg; animation-duration:9s; animation-delay:1.0s;" src="https://image.pollinations.ai/prompt/cherry%20blossom%20japanese%20garden%20digital%20art?width=320&height=320&seed=110&nologo=true">
+  <img class="float-pic hide-mobile" loading="lazy" alt="" style="top:45%; left:1%; width:110px; height:110px; --r:4deg; animation-duration:10s; animation-delay:0.2s;" src="https://image.pollinations.ai/prompt/steampunk%20airship%20in%20clouds%20digital%20art?width=320&height=320&seed=111&nologo=true">
+  <img class="float-pic hide-mobile" loading="lazy" alt="" style="top:48%; right:1%; width:110px; height:110px; --r:-6deg; animation-duration:11s; animation-delay:1.5s;" src="https://image.pollinations.ai/prompt/galaxy%20swirl%20abstract%20art?width=320&height=320&seed=112&nologo=true">
+</div>
 
 <header>
   <a href="../index.html" class="logo">
