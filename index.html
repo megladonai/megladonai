@@ -1,3 +1,6 @@
+
+
+Index · HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,7 +10,7 @@
 <meta name="description" content="Free online tools with no sign-up: PDF to Word converter, image compressor, background remover, QR code generator, and Zakat calculator. Fast, private, and runs in your browser.">
 <link rel="canonical" href="https://megladonai.netlify.app/">
 <link rel="icon" type="image/png" href="assets/logo.png">
-
+ 
 <meta property="og:type" content="website">
 <meta property="og:title" content="Megladon AI — Free Tools, Zero Friction">
 <meta property="og:description" content="Free online tools with no sign-up: PDF to Word, image compressor, background remover, QR generator, and Zakat calculator.">
@@ -17,7 +20,7 @@
 <meta name="twitter:title" content="Megladon AI — Free Tools, Zero Friction">
 <meta name="twitter:description" content="Free online tools with no sign-up: PDF to Word, image compressor, background remover, QR generator, and Zakat calculator.">
 <meta name="twitter:image" content="https://megladonai.netlify.app/assets/logo.png">
-
+ 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -32,8 +35,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg: #060B1A;
-    --bg-deep: #030611;
+    --bg: #05070F;
+    --bg-deep: #020308;
     --panel: #0D1730;
     --panel-border: #1B2A4E;
     --teal: #2BE0C4;
@@ -41,17 +44,18 @@
     --bone: #E9E4D6;
     --text: #EAF0F4;
     --text-muted: #7C8AAC;
-    --sidebar-w: 72px;
-
+    --sidebar-w: 88px;
+    --bar-gap: 14px;
+ 
     --glass-bg: rgba(255,255,255,0.045);
     --glass-bg-hover: rgba(255,255,255,0.075);
-    --glass-border: rgba(255,255,255,0.12);
-    --glass-highlight: rgba(255,255,255,0.35);
+    --glass-border: rgba(255,255,255,0.10);
+    --glass-highlight: rgba(255,255,255,0.28);
   }
-
+ 
   * { margin:0; padding:0; box-sizing:border-box; }
   html { scroll-behavior: smooth; }
-
+ 
   body{
     background: var(--bg);
     color: var(--text);
@@ -59,40 +63,77 @@
     overflow-x: hidden;
     position: relative;
   }
-
+ 
+  /* Ultra-subtle premium mesh backdrop, fixed behind everything */
+  body::before{
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 60% 45% at 15% 8%, rgba(43,224,196,0.07), transparent 60%),
+      radial-gradient(ellipse 55% 40% at 88% 12%, rgba(80,120,255,0.06), transparent 60%),
+      radial-gradient(ellipse 70% 50% at 50% 100%, rgba(43,224,196,0.045), transparent 60%),
+      var(--bg);
+  }
+ 
   body::after{
     content: "";
     position: fixed;
     inset: 0;
     pointer-events: none;
     z-index: 100;
-    opacity: 0.035;
+    opacity: 0.03;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
-
+ 
   @media (prefers-reduced-motion: reduce){
     *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
   }
-
+ 
+  /* ---------- PAGE LOAD ENTRANCE ---------- */
+  @keyframes fadeSlideUp{
+    from{ opacity: 0; transform: translateY(16px); }
+    to{ opacity: 1; transform: translateY(0); }
+  }
+  .reveal-on-load{
+    opacity: 0;
+    animation: fadeSlideUp 0.7s cubic-bezier(0.16,1,0.3,1) forwards;
+  }
+  .reveal-on-scroll{
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1);
+  }
+  .reveal-on-scroll.in-view{
+    opacity: 1;
+    transform: translateY(0);
+  }
+ 
   h1, h2, .display { font-family: 'Bricolage Grotesque', sans-serif; letter-spacing: -0.02em; }
   .mono { font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.06em; }
   a { color: inherit; text-decoration: none; }
-
+ 
   /* ---------- SIDEBAR ---------- */
   .sidebar{
     position: fixed;
-    top: 0; left: 0; bottom: 0;
-    width: var(--sidebar-w);
-    background: var(--bg-deep);
-    border-right: 1px solid var(--panel-border);
+    top: var(--bar-gap); left: var(--bar-gap); bottom: var(--bar-gap);
+    width: calc(var(--sidebar-w) - var(--bar-gap));
+    background: var(--glass-bg);
+    backdrop-filter: blur(22px) saturate(160%);
+    -webkit-backdrop-filter: blur(22px) saturate(160%);
+    border: 1px solid var(--glass-border);
+    border-radius: 22px;
+    box-shadow: inset 0 1px 0 var(--glass-highlight), 0 12px 40px rgba(0,0,0,0.35);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    padding: 20px 0;
+    padding: 22px 0;
     z-index: 60;
   }
-
+ 
   .side-logo{
     width: 32px; height: 32px;
     border-radius: 50%;
@@ -105,14 +146,14 @@
     object-fit: cover;
     display: block;
   }
-
+ 
   .side-nav{
     display: flex;
     flex-direction: column;
     gap: 22px;
     align-items: center;
   }
-
+ 
   .side-link{
     width: 38px; height: 38px;
     display: flex;
@@ -128,7 +169,7 @@
     background: var(--teal-dim);
     color: var(--teal);
   }
-
+ 
   .side-link .tip{
     position: absolute;
     left: 50px;
@@ -144,7 +185,7 @@
     transition: opacity 0.15s ease, transform 0.15s ease;
   }
   .side-link:hover .tip{ opacity: 1; transform: translateX(0); }
-
+ 
   .side-share-btn{
     width: 38px; height: 38px;
     border-radius: 10px;
@@ -159,31 +200,48 @@
   }
   .side-share-btn:hover{ border-color: var(--teal); color: var(--teal); }
   .side-share-btn svg{ width: 16px; height: 16px; }
-
+ 
   @media (max-width: 900px){
     .sidebar{ display: none; }
   }
-
+ 
   /* ---------- SITE WRAP ---------- */
   .site-wrap{ margin-left: var(--sidebar-w); }
   @media (max-width: 900px){ .site-wrap{ margin-left: 0; } }
-
+ 
+  @keyframes logoIn{
+    from{ opacity: 0; transform: scale(0.6); }
+    to{ opacity: 1; transform: scale(1); }
+  }
+  .sidebar .side-logo{ animation: logoIn 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.1s both; }
+  .sidebar .side-link{ opacity: 0; animation: fadeSlideUp 0.5s ease forwards; }
+  .sidebar .side-link:nth-child(1){ animation-delay: 0.18s; }
+  .sidebar .side-link:nth-child(2){ animation-delay: 0.24s; }
+  .sidebar .side-link:nth-child(3){ animation-delay: 0.30s; }
+  .sidebar .side-link:nth-child(4){ animation-delay: 0.36s; }
+ 
   /* ---------- NAV ---------- */
   header{
     position: fixed;
-    top: 0; left: var(--sidebar-w); right: 0;
+    top: var(--bar-gap);
+    left: calc(var(--sidebar-w) + var(--bar-gap));
+    right: var(--bar-gap);
     z-index: 50;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px 5vw;
-    background: rgba(6,11,26,0.55);
-    backdrop-filter: blur(16px) saturate(140%);
-    -webkit-backdrop-filter: blur(16px) saturate(140%);
-    border-bottom: 1px solid var(--glass-border);
+    padding: 14px 28px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(22px) saturate(160%);
+    -webkit-backdrop-filter: blur(22px) saturate(160%);
+    border: 1px solid var(--glass-border);
+    border-radius: 18px;
+    box-shadow: inset 0 1px 0 var(--glass-highlight), 0 12px 40px rgba(0,0,0,0.3);
   }
-  @media (max-width: 900px){ header{ left: 0; } }
-
+  @media (max-width: 900px){
+    header{ left: var(--bar-gap); }
+  }
+ 
   .logo{
     display: flex;
     align-items: center;
@@ -192,7 +250,7 @@
     font-weight: 700;
   }
   .logo:hover{ opacity: 0.85; }
-
+ 
   .logo-mark{
     width: 24px; height: 24px;
     border-radius: 50%;
@@ -207,7 +265,7 @@
     display: block;
   }
   @media (max-width: 900px){ .logo-mark{ display: block; } }
-
+ 
   nav.links{
     display: flex;
     align-items: center;
@@ -216,7 +274,7 @@
     color: var(--text-muted);
   }
   nav.links a:hover{ color: var(--teal); }
-
+ 
   .nav-dropdown{ position: relative; }
   .nav-dropdown-btn{
     background: none; border: none; cursor: pointer;
@@ -228,7 +286,7 @@
   .nav-dropdown-btn svg{ width: 12px; height: 12px; transition: transform 0.2s ease; }
   .nav-dropdown.open .nav-dropdown-btn svg{ transform: rotate(180deg); }
   .nav-dropdown.open .nav-dropdown-btn{ color: var(--teal); }
-
+ 
   .nav-dropdown-menu{
     position: absolute;
     top: calc(100% + 16px); left: 50%;
@@ -264,7 +322,7 @@
     font-size: 0.68rem;
     color: var(--text-muted);
   }
-
+ 
   .header-share{
     display: none;
     width: 34px; height: 34px;
@@ -277,7 +335,7 @@
     cursor: pointer;
   }
   .header-share svg{ width: 15px; height: 15px; }
-
+ 
   .hamburger{
     display: none;
     width: 34px; height: 34px;
@@ -289,14 +347,14 @@
     justify-content: center;
     cursor: pointer;
   }
-
+ 
   @media (max-width: 900px){
     nav.links a{ display: none; }
     .nav-dropdown{ display: none; }
     .header-share{ display: flex; }
     .hamburger{ display: flex; }
   }
-
+ 
   /* ---------- MOBILE MENU ---------- */
   .mobile-menu{
     position: fixed;
@@ -326,7 +384,7 @@
     border-bottom: 1px solid var(--panel-border);
   }
   .mobile-menu a:hover{ color: var(--teal); }
-
+ 
   /* ---------- HERO ---------- */
   .hero{
     position: relative;
@@ -336,56 +394,60 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 110px 6vw 60px;
+    padding: 130px 6vw 60px;
     background:
-      radial-gradient(ellipse 80% 60% at 50% 0%, #0B1E3F 0%, transparent 60%),
+      radial-gradient(ellipse 80% 60% at 50% 0%, #0A1730 0%, transparent 60%),
       linear-gradient(to bottom, var(--bg) 0%, var(--bg-deep) 100%);
   }
-
+ 
   .sonar{
     position: absolute;
     top: 50%; left: 50%;
     width: 1000px; height: 750px;
     transform: translate(-50%,-50%);
     pointer-events: none;
-    opacity: 0.65;
+    opacity: 0.55;
   }
   .orb{
     position: absolute;
     border-radius: 50%;
-    filter: blur(55px);
-    animation: orbFloat 14s ease-in-out infinite;
+    filter: blur(70px);
+    animation: orbFloat 16s ease-in-out infinite;
   }
   .orb-blue{
-    width: 260px; height: 260px;
-    background: radial-gradient(circle at 35% 30%, #60A5FA, #2563EB 70%);
-    top: 6%; left: 10%;
+    width: 320px; height: 320px;
+    background: radial-gradient(circle at 35% 30%, #3B82F6, #1D4ED8 70%);
+    top: 4%; left: 8%;
+    opacity: 0.55;
     animation-delay: 0s;
   }
   .orb-purple{
     width: 300px; height: 300px;
-    background: radial-gradient(circle at 35% 30%, #C084FC, #7C3AED 70%);
-    bottom: 8%; right: 12%;
-    animation-delay: 3s;
+    background: radial-gradient(circle at 35% 30%, #2BE0C4, #0E9C87 70%);
+    bottom: 6%; right: 10%;
+    opacity: 0.45;
+    animation-delay: 4s;
   }
   .orb-orange{
-    width: 280px; height: 280px;
-    background: radial-gradient(circle at 35% 30%, #FDBA74, #EA580C 70%);
-    bottom: -4%; left: 30%;
-    animation-delay: 6s;
+    width: 260px; height: 260px;
+    background: radial-gradient(circle at 35% 30%, #7DD3FC, #0284C7 70%);
+    bottom: -6%; left: 32%;
+    opacity: 0.35;
+    animation-delay: 8s;
   }
   .orb-pink{
-    width: 190px; height: 190px;
-    background: radial-gradient(circle at 35% 30%, #F9A8D4, #DB2777 70%);
-    top: 12%; right: 22%;
-    animation-delay: 9s;
+    width: 170px; height: 170px;
+    background: radial-gradient(circle at 35% 30%, #A5B4FC, #4F46E5 70%);
+    top: 10%; right: 24%;
+    opacity: 0.35;
+    animation-delay: 12s;
   }
   @keyframes orbFloat{
     0%, 100%{ transform: translate(0,0) scale(1); }
-    33%{ transform: translate(25px,-20px) scale(1.06); }
-    66%{ transform: translate(-20px,18px) scale(0.95); }
+    33%{ transform: translate(20px,-16px) scale(1.05); }
+    66%{ transform: translate(-16px,14px) scale(0.96); }
   }
-
+ 
   .eyebrow{
     font-size: 0.62rem;
     color: var(--teal);
@@ -405,11 +467,11 @@
     text-align: center;
     line-height: 1.6;
   }
-
+ 
   @media (max-width: 480px){
     .eyebrow{ font-size: 0.56rem; padding: 6px 10px; }
   }
-
+ 
   .hero-line-1, .hero-line-2{
     position: relative;
     z-index: 2;
@@ -425,7 +487,7 @@
   .hero-line-1{ margin-bottom: 20px; }
   .hero-line-2{ margin-top: 0; }
   .hero-line-2 span{ color: var(--teal); }
-
+ 
   .hero p{
     position: relative;
     z-index: 2;
@@ -435,7 +497,7 @@
     font-size: 1rem;
     line-height: 1.6;
   }
-
+ 
   .cta-row{
     position: relative;
     z-index: 2;
@@ -444,7 +506,7 @@
     flex-wrap: wrap;
     justify-content: center;
   }
-
+ 
   .search-wrap{
     position: relative;
     z-index: 5;
@@ -486,7 +548,7 @@
   }
   .search-clear svg{ width: 13px; height: 13px; }
   .search-clear:hover{ color: var(--teal); }
-
+ 
   .search-results{
     position: absolute;
     top: calc(100% + 10px); left: 0; right: 0;
@@ -525,7 +587,7 @@
   .search-no-results{
     padding: 20px 12px; text-align: center; color: var(--text-muted); font-family: 'Quicksand', sans-serif; font-size: 0.85rem;
   }
-
+ 
   .btn-primary{
     background: var(--teal);
     color: #04231E;
@@ -537,7 +599,7 @@
     transition: transform 0.15s ease, box-shadow 0.15s ease;
   }
   .btn-primary:hover{ transform: translateY(-2px); box-shadow: 0 0 36px rgba(43,224,196,0.48); }
-
+ 
   .btn-secondary{
     border: 1px solid var(--panel-border);
     color: var(--text);
@@ -547,7 +609,7 @@
     transition: border-color 0.15s ease, background 0.15s ease;
   }
   .btn-secondary:hover{ border-color: var(--teal); background: rgba(43,224,196,0.06); }
-
+ 
   .stats{
     position: relative;
     z-index: 2;
@@ -579,14 +641,14 @@
     text-transform: uppercase;
     margin-top: 2px;
   }
-
+ 
   /* ---------- TOOLS SECTION ---------- */
   .tools{ padding: 90px 6vw 110px; background: var(--bg-deep); position: relative; }
-
+ 
   .section-head{ max-width: 600px; margin: 0 auto 50px; text-align: center; }
   .section-head .mono{ font-size: 0.7rem; color: var(--teal); display: block; margin-bottom: 12px; }
   .section-head h2{ font-size: clamp(1.7rem, 3vw, 2.3rem); font-weight: 700; }
-
+ 
   .grid{
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
@@ -594,7 +656,7 @@
     max-width: 1140px;
     margin: 0 auto;
   }
-
+ 
   .category-block{
     max-width: 1140px;
     margin: 0 auto 56px;
@@ -608,7 +670,7 @@
     padding-bottom: 12px;
     border-bottom: 1px solid var(--panel-border);
   }
-
+ 
   .card{
     background: var(--glass-bg);
     backdrop-filter: blur(18px) saturate(150%);
@@ -624,7 +686,7 @@
     flex-direction: column;
     gap: 16px;
   }
-
+ 
   .card::after{
     content:"";
     position: absolute;
@@ -634,7 +696,7 @@
     pointer-events: none;
     border-radius: 18px 18px 0 0;
   }
-
+ 
   .card::before{
     content:"";
     position: absolute;
@@ -651,7 +713,7 @@
     box-shadow: inset 0 1px 0 var(--glass-highlight), 0 16px 40px rgba(43,224,196,0.12);
   }
   .card:hover::before{ opacity: 1; }
-
+ 
   .card-icon{
     width: 40px; height: 40px;
     border-radius: 12px;
@@ -665,7 +727,7 @@
     z-index: 1;
   }
   .card-icon svg{ width: 20px; height: 20px; }
-
+ 
   .card .tag{
     font-family: 'Quicksand', sans-serif;
     font-size: 0.64rem;
@@ -673,13 +735,13 @@
     color: var(--text-muted);
     text-transform: uppercase;
   }
-
+ 
   .card h3{
     font-family: 'Quicksand', sans-serif;
     font-size: 1.18rem;
     font-weight: 700;
   }
-
+ 
   .card p{
     font-family: 'Quicksand', sans-serif;
     color: var(--text-muted);
@@ -687,7 +749,7 @@
     line-height: 1.55;
     flex-grow: 1;
   }
-
+ 
   .card .go{
     font-family: 'Quicksand', sans-serif;
     display: flex;
@@ -699,25 +761,40 @@
   }
   .card .go svg{ width: 13px; height: 13px; transition: transform 0.2s ease; }
   .card:hover .go svg{ transform: translateX(4px); }
-
+ 
   .ad-slot{
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0 auto;
-    padding: 24px 6vw;
-    background: var(--bg-deep);
+    margin: 32px auto;
+    padding: 6vw 6vw;
   }
   .ad-slot-native{
     max-width: 1140px;
-    margin: 0 auto;
-    padding: 40px 6vw;
+    margin: 24px auto;
+    padding: 28px 6vw;
   }
   .ad-slot-banner{
-    padding: 8px 6vw 48px;
+    padding: 20px 6vw;
     min-height: 250px;
   }
-
+  .ad-slot .ad-box{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--glass-bg);
+    backdrop-filter: blur(18px) saturate(150%);
+    -webkit-backdrop-filter: blur(18px) saturate(150%);
+    border: 1px solid var(--glass-border);
+    box-shadow: inset 0 1px 0 var(--glass-highlight), 0 8px 32px rgba(0,0,0,0.25);
+    border-radius: 18px;
+    padding: 20px;
+    max-width: 1140px;
+    margin: 0 auto;
+  }
+ 
   /* ---------- FOOTER ---------- */
   footer{
     padding: 40px 6vw;
@@ -736,7 +813,7 @@
   }
   .footer-links{ display: flex; gap: 20px; }
   .footer-links a:hover{ color: var(--teal); }
-
+ 
   /* ---------- TOAST ---------- */
   .toast{
     position: fixed;
@@ -755,19 +832,19 @@
     z-index: 300;
   }
   .toast.show{ opacity: 1; transform: translateX(-50%) translateY(0); }
-
+ 
   /* MOBILE-ZOOM-FIX */
   @media (max-width: 640px){
     input, textarea, select { font-size: 16px !important; }
   }
-
+ 
   /* OVERFLOW-SAFETY */
   html, body { max-width: 100%; overflow-x: hidden; }
   img, svg, canvas, video { max-width: 100%; }
 </style>
 </head>
 <body>
-
+ 
 <aside class="sidebar">
   <a href="index.html" class="side-logo" title="Megladon AI Home"><img src="assets/logo.png" alt="Megladon AI logo"></a>
   <nav class="side-nav">
@@ -792,10 +869,10 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>
   </button>
 </aside>
-
+ 
 <div class="site-wrap">
-
-<header>
+ 
+<header class="reveal-on-load" style="animation-delay:0.05s;">
   <a href="index.html" class="logo">
     <div class="logo-mark"><img src="assets/logo.png" alt="Megladon AI logo"></div>
     MEGLADON AI
@@ -823,7 +900,7 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
   </button>
 </header>
-
+ 
 <section class="hero">
   <div class="sonar">
     <div class="orb orb-blue"></div>
@@ -831,11 +908,11 @@
     <div class="orb orb-orange"></div>
     <div class="orb orb-pink"></div>
   </div>
-
-  <div class="eyebrow mono">FREE &nbsp;·&nbsp; NO SIGN-UP &nbsp;·&nbsp; RUNS IN YOUR BROWSER</div>
-  <h1 class="hero-line-1">Find the tool.</h1>
-
-  <div class="search-wrap" id="searchWrap">
+ 
+  <div class="eyebrow mono reveal-on-load" style="animation-delay:0.1s;">FREE &nbsp;·&nbsp; NO SIGN-UP &nbsp;·&nbsp; RUNS IN YOUR BROWSER</div>
+  <h1 class="hero-line-1 reveal-on-load" style="animation-delay:0.18s;">Find the tool.</h1>
+ 
+  <div class="search-wrap reveal-on-load" id="searchWrap" style="animation-delay:0.26s;">
     <div class="search-box">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
       <input type="text" id="toolSearchInput" placeholder="Search tools... e.g. 'merge pdf', 'resize image'" autocomplete="off">
@@ -845,36 +922,38 @@
     </div>
     <div class="search-results" id="searchResults"></div>
   </div>
-
-  <div class="hero-line-2">
+ 
+  <div class="hero-line-2 reveal-on-load" style="animation-delay:0.34s;">
     <span>Get it done.</span> No depths spared.
   </div>
-
-  <p>Megladon AI is a growing set of fast, free utilities — PDFs, images, QR codes and more — built to solve one task well and get out of your way.</p>
-
-  <div class="cta-row">
+ 
+  <p class="reveal-on-load" style="animation-delay:0.42s;">Megladon AI is a growing set of fast, free utilities — PDFs, images, QR codes and more — built to solve one task well and get out of your way.</p>
+ 
+  <div class="cta-row reveal-on-load" style="animation-delay:0.5s;">
     <a href="#tools" class="btn-primary">Browse tools</a>
     <a href="about.html" class="btn-secondary">How it works</a>
   </div>
-
-  <div class="stats">
+ 
+  <div class="stats reveal-on-load" style="animation-delay:0.58s;">
     <div class="stat"><div class="num">17</div><div class="label mono">Tools live</div></div>
     <div class="stat"><div class="num">0 Rs</div><div class="label mono">Cost to use</div></div>
     <div class="stat"><div class="num">100%</div><div class="label mono">Runs client-side</div></div>
   </div>
 </section>
-
+ 
 <div class="ad-slot ad-slot-native">
-  <script async="async" data-cfasync="false" src="https://pl30461107.effectivecpmnetwork.com/23aee48733812383bfdb69ecc1e32190/invoke.js"></script>
-  <div id="container-23aee48733812383bfdb69ecc1e32190"></div>
+  <div class="ad-box">
+    <script async="async" data-cfasync="false" src="https://pl30461107.effectivecpmnetwork.com/23aee48733812383bfdb69ecc1e32190/invoke.js"></script>
+    <div id="container-23aee48733812383bfdb69ecc1e32190"></div>
+  </div>
 </div>
-
+ 
 <section class="tools" id="tools">
   <div class="section-head">
     <span class="mono">THE TOOLBOX</span>
     <h2>Every tool, sorted by category.</h2>
   </div>
-
+ 
   <div class="category-block" id="cat-pdf">
     <h3 class="category-title">📄 PDF Tools</h3>
     <div class="grid">
@@ -885,7 +964,7 @@
         <p>Turn a locked PDF into an editable .docx file in seconds.</p>
         <span class="go">Open tool <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
-
+ 
       <a href="pdf-merge/index.html" class="card">
         <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/><path d="M11 7h4a2 2 0 0 1 2 2v4M13 17H9a2 2 0 0 1-2-2v-4"/></svg></div>
         <span class="tag">DOCUMENT</span>
@@ -893,7 +972,7 @@
         <p>Combine multiple PDF files into a single document, in any order.</p>
         <span class="go">Open tool <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
-
+ 
       <a href="pdf-split/index.html" class="card">
         <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="7" height="16" rx="1"/><rect x="14" y="4" width="7" height="16" rx="1"/></svg></div>
         <span class="tag">DOCUMENT</span>
@@ -901,7 +980,7 @@
         <p>Break a PDF into separate pages or a chosen page range.</p>
         <span class="go">Open tool <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
-
+ 
       <a href="pdf-compress/index.html" class="card">
         <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3v4a1 1 0 0 1-1 1H3M21 8h-4a1 1 0 0 1-1-1V3M3 16h4a1 1 0 0 1 1 1v4M16 21v-4a1 1 0 0 1 1-1h4"/></svg></div>
         <span class="tag">DOCUMENT</span>
@@ -909,7 +988,7 @@
         <p>Shrink a PDF's file size while keeping it readable and sharp.</p>
         <span class="go">Open tool <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
-
+ 
       <a href="jpg-to-pdf/index.html" class="card">
         <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>
         <span class="tag">DOCUMENT</span>
@@ -917,7 +996,7 @@
         <p>Turn one or more images into a single, clean PDF file.</p>
         <span class="go">Open tool <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
-
+ 
       <a href="pdf-to-jpg/index.html" class="card">
         <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><circle cx="10" cy="13" r="1.5"/><path d="M8 18l2.5-3 2 2L16 14l2 4"/></svg></div>
         <span class="tag">DOCUMENT</span>
@@ -927,20 +1006,22 @@
       </a>
     </div>
   </div>
-
+ 
   <div class="ad-slot ad-slot-banner">
-    <script>
-      atOptions = {
-        'key' : 'bfa8280c1e53cb8f0974a1ff91aefcd0',
-        'format' : 'iframe',
-        'height' : 250,
-        'width' : 300,
-        'params' : {}
-      };
-    </script>
-    <script src="https://www.effectivecpmnetwork.com/bfa8280c1e53cb8f0974a1ff91aefcd0/invoke.js"></script>
+    <div class="ad-box">
+      <script>
+        atOptions = {
+          'key' : 'bfa8280c1e53cb8f0974a1ff91aefcd0',
+          'format' : 'iframe',
+          'height' : 250,
+          'width' : 300,
+          'params' : {}
+        };
+      </script>
+      <script src="https://www.effectivecpmnetwork.com/bfa8280c1e53cb8f0974a1ff91aefcd0/invoke.js"></script>
+    </div>
   </div>
-
+ 
   <div class="category-block" id="cat-image">
     <h3 class="category-title">🖼️ Image Tools</h3>
     <div class="grid">
@@ -951,7 +1032,7 @@
         <p>Shrink photo file size without wrecking quality.</p>
         <span class="go">Open tool <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
-
+ 
       <a href="background-remover/index.html" class="card">
         <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg></div>
         <span class="tag">IMAGE</span>
@@ -959,7 +1040,7 @@
         <p>Strip the background from any photo automatically.</p>
         <span class="go">Open tool <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
-
+ 
       <a href="image-resizer/index.html" class="card">
         <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
         <span class="tag">IMAGE</span>
@@ -967,7 +1048,7 @@
         <p>Change dimensions exactly, or scale by percentage.</p>
         <span class="go">Open tool <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
-
+ 
       <a href="image-converter/index.html" class="card">
         <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M9 9h6M9 13h6M9 17h3"/></svg></div>
         <span class="tag">IMAGE</span>
@@ -975,7 +1056,7 @@
         <p>Convert between JPG, PNG, and WEBP instantly.</p>
         <span class="go">Open tool <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
-
+ 
       <a href="passport-photo-maker/index.html" class="card">
         <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M7 18c1-2.5 3-3.5 5-3.5s4 1 5 3.5"/></svg></div>
         <span class="tag">IMAGE</span>
@@ -985,7 +1066,7 @@
       </a>
     </div>
   </div>
-
+ 
   <div class="category-block" id="cat-utility">
     <h3 class="category-title">🔗 Utility Tools</h3>
     <div class="grid">
@@ -996,7 +1077,7 @@
         <p>Turn any link, number or note into a scannable code.</p>
         <span class="go">Open tool <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
-
+ 
       <a href="word-counter/index.html" class="card">
         <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg></div>
         <span class="tag">UTILITY</span>
@@ -1004,7 +1085,7 @@
         <p>Live counts of words, characters, and reading time.</p>
         <span class="go">Open tool <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
-
+ 
       <a href="case-converter/index.html" class="card">
         <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3M9 20h6M12 4v16"/><path d="M4 15l4 6M8 15l-4 6"/></svg></div>
         <span class="tag">UTILITY</span>
@@ -1012,7 +1093,7 @@
         <p>UPPERCASE, lowercase, Title Case, camelCase and more.</p>
         <span class="go">Open tool <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
-
+ 
       <a href="signature-generator/index.html" class="card">
         <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17c2-4 4-6 6-3s3 3 5-1 4-6 7-3"/></svg></div>
         <span class="tag">UTILITY</span>
@@ -1020,7 +1101,7 @@
         <p>Draw or type a signature, download as transparent PNG.</p>
         <span class="go">Open tool <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
-
+ 
       <a href="resume-builder/index.html" class="card">
         <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/></svg></div>
         <span class="tag">UTILITY</span>
@@ -1028,7 +1109,7 @@
         <p>Build a professional resume with live preview, download as PDF.</p>
         <span class="go">Open tool <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
-
+ 
       <a href="text-to-image/index.html" class="card">
         <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.2H22l-6 4.4 2.4 7.2L12 16.4l-6.4 4.4 2.4-7.2-6-4.4h7.6z"/></svg></div>
         <span class="tag">AI</span>
@@ -1038,7 +1119,7 @@
       </a>
     </div>
   </div>
-
+ 
   <div class="category-block" id="cat-finance">
     <h3 class="category-title">💰 Finance Tools</h3>
     <div class="grid">
@@ -1052,7 +1133,7 @@
     </div>
   </div>
 </section>
-
+ 
 <footer>
   <div>© 2026 Megladon AI. Built for speed.</div>
   <div class="footer-links mono">
@@ -1061,9 +1142,9 @@
     <a href="privacy.html">Privacy</a>
   </div>
 </footer>
-
+ 
 </div>
-
+ 
 <div class="mobile-menu" id="mobileMenu">
   <button class="close-btn" id="closeMenuBtn">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M18 6L6 18M6 6l12 12"/></svg>
@@ -1074,23 +1155,23 @@
   <a href="contact.html">Contact</a>
   <a href="privacy.html">Privacy</a>
 </div>
-
+ 
 <div class="toast" id="toast">Link copied to clipboard</div>
-
+ 
 <script>
   const hamburgerBtn = document.getElementById('hamburgerBtn');
   const closeMenuBtn = document.getElementById('closeMenuBtn');
   const mobileMenu = document.getElementById('mobileMenu');
   hamburgerBtn.addEventListener('click', () => mobileMenu.classList.add('open'));
   closeMenuBtn.addEventListener('click', () => mobileMenu.classList.remove('open'));
-
+ 
   function showToast(msg){
     const toast = document.getElementById('toast');
     toast.textContent = msg;
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 2200);
   }
-
+ 
   async function shareSite(){
     const shareData = {
       title: 'Megladon AI — Free Online Tools',
@@ -1108,10 +1189,10 @@
       }
     }
   }
-
+ 
   document.getElementById('sideShareBtn').addEventListener('click', shareSite);
   document.getElementById('headerShareBtn').addEventListener('click', shareSite);
-
+ 
   // Tools search
   const TOOLS_INDEX = [
     { name: 'PDF to Word', desc: 'Document · PDF Tools', link: 'pdf-to-word/index.html', keywords: 'pdf word docx convert document editable' },
@@ -1132,14 +1213,14 @@
     { name: 'Resume & CV Builder', desc: 'Utility · Utility Tools', link: 'resume-builder/index.html', keywords: 'resume cv builder maker job pdf professional' },
     { name: 'Zakat Calculator', desc: 'Finance · Finance Tools', link: 'zakat-calculator/index.html', keywords: 'zakat calculator finance gold silver nisab' },
   ];
-
+ 
   const searchInput = document.getElementById('toolSearchInput');
   const searchResults = document.getElementById('searchResults');
   const searchClearBtn = document.getElementById('searchClearBtn');
   const searchWrap = document.getElementById('searchWrap');
-
+ 
   const genericIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>';
-
+ 
   function renderSearchResults(query){
     const q = query.trim().toLowerCase();
     if (!q){
@@ -1149,7 +1230,7 @@
     const matches = TOOLS_INDEX.filter(t =>
       t.name.toLowerCase().includes(q) || t.keywords.includes(q)
     ).slice(0, 8);
-
+ 
     if (matches.length === 0){
       searchResults.innerHTML = '<div class="search-no-results">No tools found for "' + query + '"</div>';
     } else {
@@ -1165,7 +1246,7 @@
     }
     searchResults.classList.add('show');
   }
-
+ 
   searchInput.addEventListener('input', () => {
     searchClearBtn.style.display = searchInput.value ? 'flex' : 'none';
     renderSearchResults(searchInput.value);
@@ -1188,7 +1269,23 @@
       if (first) window.location.href = first.getAttribute('href');
     }
   });
-
+ 
+  // Scroll-reveal for cards, ad boxes, and category titles
+  const revealTargets = document.querySelectorAll('.card, .ad-box, .category-title');
+  revealTargets.forEach((el, i) => {
+    el.classList.add('reveal-on-scroll');
+    el.style.transitionDelay = ((i % 6) * 0.06) + 's';
+  });
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting){
+        entry.target.classList.add('in-view');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  revealTargets.forEach(el => revealObserver.observe(el));
+ 
   // Tools dropdown menu
   const toolsDropdown = document.getElementById('toolsDropdown');
   const toolsDropdownBtn = document.getElementById('toolsDropdownBtn');
@@ -1203,8 +1300,7 @@
     a.addEventListener('click', () => toolsDropdown.classList.remove('open'));
   });
 </script>
-
-<script src="https://pl30461106.effectivecpmnetwork.com/00/f7/b5/00f7b51d6327a72f93c8a7919dea61ee.js"></script>
-
+ 
 </body>
 </html>
+ 
