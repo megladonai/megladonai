@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Text to Speech Generator — Megladon AI</title>
+<meta name="description" content="Turn text into natural, expressive speech. Choose a character, model, speed and style. Free, no sign-up.">
+<link rel="icon" type="image/png" href="../assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #05070F;
+    --bg-deep: #020308;
+    --teal: #2BE0C4;
+    --teal-dim: rgba(43,224,196,0.14);
+    --text: #EAF0F4;
+    --text-muted: #7C8AAC;
+    --glass-bg: rgba(255,255,255,0.045);
+    --glass-bg-hover: rgba(255,255,255,0.075);
+    --glass-border: rgba(255,255,255,0.10);
+    --glass-highlight: rgba(255,255,255,0.28);
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  body::before{
+    content:"";
+    position: fixed; inset:0; z-index:-1;
+    background:
+      radial-gradient(ellipse 60% 45% at 15% 8%, rgba(43,224,196,0.07), transparent 60%),
+      radial-gradient(ellipse 55% 40% at 88% 12%, rgba(80,120,255,0.06), transparent 60%),
+      var(--bg);
+  }
+  a{ color: inherit; text-decoration: none; }
+  h1{ font-family:'Bricolage Grotesque', sans-serif; letter-spacing:-0.02em; }
+  .mono{ font-family:'IBM Plex Mono', monospace; letter-spacing:0.06em; }
+
+  header{
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 18px 6vw;
+  }
+  .logo{ display:flex; align-items:center; gap:8px; font-weight:700; font-size:0.9rem; }
+  .logo img{ width:26px; height:26px; border-radius:50%; box-shadow:0 0 14px rgba(43,224,196,0.35); }
+  .back-link{ font-size:0.8rem; color: var(--text-muted); display:flex; align-items:center; gap:6px; }
+  .back-link:hover{ color: var(--teal); }
+  .back-link svg{ width:14px; height:14px; }
+
+  main{
+    flex:1;
+    display:flex; flex-direction:column; align-items:center;
+    padding: 30px 6vw 80px;
+  }
+
+  .eyebrow{
+    font-size: 0.62rem; color: var(--teal); text-transform: uppercase;
+    background: var(--glass-bg); border:1px solid var(--glass-border);
+    padding: 5px 12px; border-radius: 100px; margin-bottom: 18px;
+  }
+  h1{ font-size: clamp(1.6rem, 3.4vw, 2.3rem); text-align:center; margin-bottom: 10px; }
+  main > p{ color: var(--text-muted); max-width: 520px; text-align:center; margin-bottom: 34px; font-size: 0.95rem; line-height:1.6; }
+
+  .panel{
+    width: 100%; max-width: 720px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(18px) saturate(150%);
+    -webkit-backdrop-filter: blur(18px) saturate(150%);
+    border: 1px solid var(--glass-border);
+    box-shadow: inset 0 1px 0 var(--glass-highlight), 0 8px 32px rgba(0,0,0,0.25);
+    border-radius: 18px;
+    padding: 26px;
+  }
+
+  textarea{
+    width: 100%; min-height: 110px; resize: vertical;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 14px;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.92rem;
+    outline: none;
+    transition: border-color 0.2s ease;
+  }
+  textarea:focus{ border-color: var(--teal); }
+  textarea::placeholder{ color: var(--text-muted); }
+
+  .char-count{
+    text-align: right;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 6px;
+  }
+  .char-count.warn{ color: #ff9b9b; }
+
+  .controls-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+  }
+
+  .field label{
+    display: block;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  select{
+    width: 100%;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    padding: 11px 12px;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+  }
+  select:focus{ border-color: var(--teal); }
+  select option{ background: #0D1730; color: var(--text); }
+
+  .slider-row{
+    display: flex; align-items: center; gap: 10px;
+  }
+  input[type="range"]{
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    border-radius: 4px;
+    background: var(--glass-border);
+    outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance: none;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--teal);
+    box-shadow: 0 0 10px rgba(43,224,196,0.5);
+    cursor: pointer;
+  }
+  input[type="range"]::-moz-range-thumb{
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--teal);
+    border: none;
+    box-shadow: 0 0 10px rgba(43,224,196,0.5);
+    cursor: pointer;
+  }
+  .slider-val{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--teal);
+    min-width: 38px;
+    text-align: right;
+  }
+
+  .row{ display:flex; gap:12px; margin-top:22px; flex-wrap:wrap; }
+
+  .btn-primary{
+    background: var(--teal); color:#04231E; font-weight:600;
+    padding: 13px 26px; border-radius: 9px; font-size:0.92rem;
+    border:none; cursor:pointer;
+    box-shadow: 0 0 26px rgba(43,224,196,0.32);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+  }
+  .btn-primary:hover{ transform: translateY(-2px); box-shadow: 0 0 36px rgba(43,224,196,0.48); }
+  .btn-primary:disabled{ opacity:0.5; cursor:not-allowed; transform:none; box-shadow:none; }
+
+  .btn-secondary{
+    border: 1px solid var(--glass-border); color: var(--text);
+    padding: 13px 26px; border-radius: 9px; font-size:0.92rem;
+    background: transparent; cursor:pointer;
+  }
+  .btn-secondary:hover{ border-color: var(--teal); background: rgba(43,224,196,0.06); }
+
+  .result-wrap{
+    width: 100%; max-width: 720px; margin-top: 22px;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 18px;
+    padding: 22px;
+  }
+  .result-wrap.show{ display:flex; }
+  .result-wrap audio{ width: 100%; }
+
+  .status{
+    margin-top: 18px; font-size: 0.85rem; color: var(--text-muted);
+    display:none; align-items:center; gap:10px;
+  }
+  .status.show{ display:flex; }
+  .spinner{
+    width:16px; height:16px; border-radius:50%;
+    border: 2px solid var(--glass-border); border-top-color: var(--teal);
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin{ to{ transform: rotate(360deg); } }
+
+  .error-box{
+    margin-top:18px; padding:12px 16px; border-radius:10px;
+    background: rgba(255,80,80,0.08); border:1px solid rgba(255,80,80,0.3);
+    color:#ff9b9b; font-size:0.85rem; display:none; max-width:720px; width:100%;
+    align-items:flex-start; gap:8px;
+  }
+  .error-box.show{ display:flex; }
+  .error-box svg{ width:16px; height:16px; flex-shrink:0; margin-top:1px; }
+
+  .hint{
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+
+  footer{
+    text-align:center; padding: 24px; color: var(--text-muted); font-size:0.78rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="../index.html" class="logo">
+    <img src="../assets/logo.png" alt="Megladon AI logo">
+    MEGLADON AI
+  </a>
+  <a href="../index.html#cat-ai" class="back-link">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    Back to Tools
+  </a>
+</header>
+
+<main>
+  <div class="eyebrow mono">FREE · NO SIGN-UP · AI POWERED</div>
+  <h1>AI Text to Speech Generator</h1>
+  <p>Type your text, pick a character, tune the speed and style, and generate natural-sounding speech.</p>
+
+  <div class="panel">
+    <textarea id="textInput" maxlength="2000" placeholder="Type or paste the text you want to convert to speech..."></textarea>
+    <div class="char-count" id="charCount">0 / 2000</div>
+
+    <div class="controls-grid">
+      <div class="field">
+        <label for="voiceSelect">Character / Voice</label>
+        <select id="voiceSelect">
+          <option value="">Loading voices...</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="modelSelect">Model</label>
+        <select id="modelSelect">
+          <option value="inworld-tts-2">Inworld TTS-2 (Premium, most expressive)</option>
+          <option value="inworld-tts-1">Inworld TTS-1 (Faster)</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="styleSelect">Style / Expressiveness</label>
+        <select id="styleSelect">
+          <option value="STABLE">Stable — calm & consistent</option>
+          <option value="BALANCED" selected>Balanced — natural default</option>
+          <option value="CREATIVE">Creative — more expressive</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="formatSelect">Audio Format</label>
+        <select id="formatSelect">
+          <option value="MP3" selected>MP3</option>
+          <option value="WAV">WAV</option>
+          <option value="OGG_OPUS">OGG</option>
+        </select>
+      </div>
+
+      <div class="field" style="grid-column: 1 / -1;">
+        <label for="speedSlider">Speed</label>
+        <div class="slider-row">
+          <input type="range" id="speedSlider" min="0.5" max="1.5" step="0.05" value="1.0">
+          <span class="slider-val" id="speedVal">1.00x</span>
+        </div>
+        <div class="hint">0.5x = slowest, 1.0x = natural pace, 1.5x = fastest</div>
+      </div>
+    </div>
+
+    <div class="row">
+      <button class="btn-primary" id="generateBtn">Generate Speech</button>
+      <button class="btn-secondary" id="clearBtn">Clear</button>
+    </div>
+
+    <div class="status" id="statusBox">
+      <div class="spinner"></div>
+      <span>Generating your audio, please wait...</span>
+    </div>
+    <div class="error-box" id="errorBox"></div>
+  </div>
+
+  <div class="result-wrap" id="resultWrap">
+    <audio id="resultAudio" controls></audio>
+    <a class="btn-secondary" id="downloadBtn" download="megladon-ai-speech.mp3">Download Audio</a>
+  </div>
+</main>
+
+<footer>© 2026 Megladon AI. Built for speed.</footer>
+
+<script>
+  const textInput = document.getElementById('textInput');
+  const charCount = document.getElementById('charCount');
+  const voiceSelect = document.getElementById('voiceSelect');
+  const modelSelect = document.getElementById('modelSelect');
+  const styleSelect = document.getElementById('styleSelect');
+  const formatSelect = document.getElementById('formatSelect');
+  const speedSlider = document.getElementById('speedSlider');
+  const speedVal = document.getElementById('speedVal');
+  const generateBtn = document.getElementById('generateBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const statusBox = document.getElementById('statusBox');
+  const errorBox = document.getElementById('errorBox');
+  const resultWrap = document.getElementById('resultWrap');
+  const resultAudio = document.getElementById('resultAudio');
+  const downloadBtn = document.getElementById('downloadBtn');
+
+  const FALLBACK_VOICES = ['Sarah', 'Dennis', 'Alex', 'Olivia', 'Ashley'];
+
+  const FORMAT_EXT = { MP3: 'mp3', WAV: 'wav', OGG_OPUS: 'ogg' };
+  const FORMAT_MIME = { MP3: 'audio/mpeg', WAV: 'audio/wav', OGG_OPUS: 'audio/ogg' };
+
+  textInput.addEventListener('input', () => {
+    const len = textInput.value.length;
+    charCount.textContent = `${len} / 2000`;
+    charCount.classList.toggle('warn', len >= 1900);
+  });
+
+  speedSlider.addEventListener('input', () => {
+    speedVal.textContent = Number(speedSlider.value).toFixed(2) + 'x';
+  });
+
+  function populateVoices(list){
+    voiceSelect.innerHTML = '';
+    list.forEach(name => {
+      const opt = document.createElement('option');
+      opt.value = name;
+      opt.textContent = name;
+      voiceSelect.appendChild(opt);
+    });
+  }
+
+  async function loadVoices(){
+    try {
+      const res = await fetch('/.netlify/functions/voices');
+      if (!res.ok) throw new Error('voices fetch failed');
+      const data = await res.json();
+      const rawList = data.voices || data.data || data.items || [];
+      const names = rawList
+        .map(v => v.voiceId || v.id || v.name)
+        .filter(Boolean);
+      if (names.length){
+        populateVoices(names);
+      } else {
+        populateVoices(FALLBACK_VOICES);
+      }
+    } catch (e) {
+      populateVoices(FALLBACK_VOICES);
+    }
+  }
+  loadVoices();
+
+  function showError(message){
+    errorBox.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><span></span>';
+    errorBox.querySelector('span').textContent = message;
+    errorBox.classList.add('show');
+  }
+
+  async function generateSpeech(){
+    const text = textInput.value.trim();
+    errorBox.classList.remove('show');
+    errorBox.innerHTML = '';
+
+    if (!text){
+      showError('Please type some text first.');
+      return;
+    }
+
+    generateBtn.disabled = true;
+    statusBox.classList.add('show');
+    resultWrap.classList.remove('show');
+
+    const audioEncoding = formatSelect.value;
+
+    try {
+      const res = await fetch('/.netlify/functions/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text,
+          voiceId: voiceSelect.value,
+          modelId: modelSelect.value,
+          deliveryMode: styleSelect.value,
+          audioEncoding,
+          speakingRate: Number(speedSlider.value),
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok){
+        throw new Error(data.error || 'Something went wrong. Please try again.');
+      }
+
+      const mime = FORMAT_MIME[audioEncoding] || 'audio/mpeg';
+      const ext = FORMAT_EXT[audioEncoding] || 'mp3';
+      const src = `data:${mime};base64,${data.audioContent}`;
+
+      resultAudio.src = src;
+      downloadBtn.href = src;
+      downloadBtn.setAttribute('download', `megladon-ai-speech.${ext}`);
+      resultWrap.classList.add('show');
+    } catch (err){
+      showError(err.message || 'Something went wrong. Please try again.');
+    } finally {
+      generateBtn.disabled = false;
+      statusBox.classList.remove('show');
+    }
+  }
+
+  generateBtn.addEventListener('click', generateSpeech);
+  clearBtn.addEventListener('click', () => {
+    textInput.value = '';
+    charCount.textContent = '0 / 2000';
+    charCount.classList.remove('warn');
+    resultWrap.classList.remove('show');
+    errorBox.classList.remove('show');
+  });
+</script>
+
+</body>
+</html>
