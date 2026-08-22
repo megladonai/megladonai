@@ -19,6 +19,7 @@ exports.handler = async function (event) {
   const audioEncoding = payload.audioEncoding || 'MP3';
   let speakingRate = Number(payload.speakingRate) || 1.0;
   const deliveryMode = payload.deliveryMode || 'BALANCED';
+  const language = (payload.language || '').trim();
 
   if (!text) {
     return { statusCode: 400, body: JSON.stringify({ error: 'Text is required' }) };
@@ -58,6 +59,7 @@ exports.handler = async function (event) {
         },
         deliveryMode,
         applyTextNormalization: 'ON',
+        ...(language ? { language } : {}),
       }),
     });
 

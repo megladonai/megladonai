@@ -522,6 +522,28 @@
         </div>
       </div>
 
+      <div class="field">
+        <label>Language</label>
+        <div class="tts-dropdown" id="languageDropdown">
+          <button class="tts-dropdown-btn" type="button" id="languageDropdownBtn">
+            <span id="languageSelectedLabel">Auto-detect</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="tts-dropdown-menu">
+            <button type="button" class="tts-dropdown-item active" data-value="" data-label="Auto-detect">Auto-detect<span class="tts-item-sub">Best guess from text</span></button>
+            <button type="button" class="tts-dropdown-item" data-value="en" data-label="English">English</button>
+            <button type="button" class="tts-dropdown-item" data-value="ur" data-label="Urdu">Urdu<span class="tts-item-sub">اردو — experimental, not officially supported by Inworld yet</span></button>
+            <button type="button" class="tts-dropdown-item" data-value="hi" data-label="Hindi">Hindi</button>
+            <button type="button" class="tts-dropdown-item" data-value="ar" data-label="Arabic">Arabic</button>
+            <button type="button" class="tts-dropdown-item" data-value="es" data-label="Spanish">Spanish</button>
+            <button type="button" class="tts-dropdown-item" data-value="fr" data-label="French">French</button>
+            <button type="button" class="tts-dropdown-item" data-value="de" data-label="German">German</button>
+            <button type="button" class="tts-dropdown-item" data-value="zh" data-label="Chinese">Chinese</button>
+            <button type="button" class="tts-dropdown-item" data-value="ja" data-label="Japanese">Japanese</button>
+          </div>
+        </div>
+      </div>
+
       <div class="field" style="grid-column: 1 / -1;">
         <label for="speedSlider">Speed</label>
         <div class="slider-row">
@@ -609,6 +631,7 @@
   let selectedModel = 'inworld-tts-2';
   let selectedStyle = 'BALANCED';
   let selectedFormat = 'MP3';
+  let selectedLanguage = '';
   const previewCache = {};
   let currentPreviewAudio = null;
   let currentPreviewBtn = null;
@@ -662,6 +685,7 @@
   setupSimpleDropdown('modelDropdown', 'modelSelectedLabel', (v) => { selectedModel = v; });
   setupSimpleDropdown('styleDropdown', 'styleSelectedLabel', (v) => { selectedStyle = v; });
   setupSimpleDropdown('formatDropdown', 'formatSelectedLabel', (v) => { selectedFormat = v; });
+  setupSimpleDropdown('languageDropdown', 'languageSelectedLabel', (v) => { selectedLanguage = v; });
 
   // ---------- Voice / character dropdown (with live preview) ----------
   const voiceDropdown = document.getElementById('voiceDropdown');
@@ -844,6 +868,7 @@
     generateBtn.disabled = true;
     statusBox.classList.add('show');
     resultWrap.classList.remove('show');
+    resultAudio.pause();
 
     try {
       const res = await fetch('/.netlify/functions/tts', {
@@ -856,6 +881,7 @@
           deliveryMode: selectedStyle,
           audioEncoding: selectedFormat,
           speakingRate: Number(speedSlider.value),
+          language: selectedLanguage || undefined,
         }),
       });
 
@@ -883,6 +909,10 @@
     textInput.value = '';
     charCount.textContent = '0 / 2000';
     charCount.classList.remove('warn');
+    resultAudio.pause();
+    resultAudio.currentTime = 0;
+    resultAudio.removeAttribute('src');
+    resultAudio.load();
     resultWrap.classList.remove('show');
     errorBox.classList.remove('show');
   });
