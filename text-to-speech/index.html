@@ -23,6 +23,19 @@
     --glass-highlight: rgba(255,255,255,0.28);
   }
   *{ margin:0; padding:0; box-sizing:border-box; }
+  html{
+    scrollbar-width: thin;
+    scrollbar-color: rgba(43,224,196,0.4) rgba(255,255,255,0.03);
+  }
+  ::-webkit-scrollbar{ width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track{ background: rgba(255,255,255,0.03); }
+  ::-webkit-scrollbar-thumb{
+    background: rgba(43,224,196,0.35);
+    border-radius: 10px;
+    border: 2px solid var(--bg);
+  }
+  ::-webkit-scrollbar-thumb:hover{ background: rgba(43,224,196,0.55); }
+  html, body{ max-width:100%; overflow-x:hidden; }
   body{
     background: var(--bg);
     color: var(--text);
@@ -30,6 +43,7 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    position: relative;
   }
   body::before{
     content:"";
@@ -76,6 +90,7 @@
     box-shadow: inset 0 1px 0 var(--glass-highlight), 0 8px 32px rgba(0,0,0,0.25);
     border-radius: 18px;
     padding: 26px;
+    position: relative;
   }
 
   textarea{
@@ -104,7 +119,7 @@
 
   .controls-grid{
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
     gap: 16px;
     margin-top: 20px;
   }
@@ -120,8 +135,11 @@
     margin-bottom: 8px;
   }
 
-  select{
+  /* ---------- CUSTOM THEMED DROPDOWNS (model / style / format) ---------- */
+  .tts-dropdown{ position: relative; }
+  .tts-dropdown-btn{
     width: 100%;
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
     background: rgba(255,255,255,0.03);
     border: 1px solid var(--glass-border);
     border-radius: 10px;
@@ -129,16 +147,195 @@
     color: var(--text);
     font-family: 'Inter', sans-serif;
     font-size: 0.85rem;
-    outline: none;
     cursor: pointer;
+    transition: border-color 0.15s ease;
+    text-align: left;
+  }
+  .tts-dropdown-btn:hover{ border-color: rgba(43,224,196,0.4); }
+  .tts-dropdown.open .tts-dropdown-btn{ border-color: var(--teal); }
+  .tts-dropdown-btn svg{ width: 12px; height: 12px; color: var(--text-muted); transition: transform 0.2s ease; flex-shrink: 0; }
+  .tts-dropdown.open .tts-dropdown-btn svg{ transform: rotate(180deg); color: var(--teal); }
+
+  .tts-dropdown-menu{
+    position: absolute;
+    top: calc(100% + 8px); left: 0; right: 0;
+    background: rgba(7, 11, 22, 0.94);
+    backdrop-filter: blur(30px) saturate(180%);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 8px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.55), inset 0 1px 0 var(--glass-highlight);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-6px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 80;
+    max-height: 260px;
+    overflow-y: auto;
+  }
+  .tts-dropdown.open .tts-dropdown-menu{
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+  .tts-dropdown-item{
+    width: 100%;
+    display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+    background: none; border: none; text-align: left; cursor: pointer;
+    padding: 9px 10px; border-radius: 8px;
+    color: var(--text); font-family: 'Inter', sans-serif; font-size: 0.85rem;
+  }
+  .tts-dropdown-item:hover, .tts-dropdown-item.active{ background: var(--teal-dim); color: var(--teal); }
+  .tts-item-sub{ font-size: 0.7rem; color: var(--text-muted); }
+  .tts-dropdown-item:hover .tts-item-sub, .tts-dropdown-item.active .tts-item-sub{ color: rgba(43,224,196,0.75); }
+
+  /* ---------- VOICE / CHARACTER PANEL (opens in the left gutter) ---------- */
+  .voice-panel{
+    position: fixed;
+    width: min(300px, 82vw);
+    max-height: min(420px, 70vh);
+    background: rgba(7, 11, 22, 0.94);
+    backdrop-filter: blur(30px) saturate(180%);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.55), inset 0 1px 0 var(--glass-highlight);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-10px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    z-index: 90;
+  }
+  .voice-panel.show{ opacity: 1; pointer-events: auto; transform: translateX(0); }
+  .voice-panel-scroll{
+    max-height: inherit;
+    overflow-y: auto;
+    padding: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(43,224,196,0.4) transparent;
+  }
+  .voice-panel-scroll::-webkit-scrollbar{ width: 6px; }
+  .voice-panel-scroll::-webkit-scrollbar-track{ background: transparent; }
+  .voice-panel-scroll::-webkit-scrollbar-thumb{ background: rgba(43,224,196,0.4); border-radius: 3px; }
+  .voice-panel-scroll::-webkit-scrollbar-thumb:hover{ background: rgba(43,224,196,0.6); }
+  .voice-panel-title{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.64rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 6px 8px 10px;
+  }
+  .voice-item{
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 8px;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  .voice-item:hover, .voice-item.active{ background: var(--teal-dim); }
+  .voice-item-name{ flex: 1; font-family: 'Quicksand', sans-serif; font-weight: 600; font-size: 0.86rem; color: var(--text); }
+  .voice-item.active .voice-item-name{ color: var(--teal); }
+  .voice-preview-btn{
+    width: 30px; height: 30px; border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--glass-border);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--teal); cursor: pointer; flex-shrink: 0;
+  }
+  .voice-preview-btn:hover{ background: var(--teal-dim); }
+  .voice-preview-btn svg{ width: 13px; height: 13px; }
+  .voice-preview-btn .mini-spinner{
+    display: none; width: 12px; height: 12px; border-radius: 50%;
+    border: 2px solid var(--glass-border); border-top-color: var(--teal);
+    animation: spin 0.8s linear infinite;
+  }
+  .voice-preview-btn.loading svg{ display: none; }
+  .voice-preview-btn.loading .mini-spinner{ display: block; }
+  .voice-preview-btn.playing{ color: #04231E; background: var(--teal); }
+
+  .clone-voice-trigger{
+    width: 100%;
+    display: flex; align-items: center; gap: 8px;
+    background: var(--teal-dim);
+    border: 1px dashed rgba(43,224,196,0.4);
+    border-radius: 10px;
+    padding: 9px 10px;
+    margin-bottom: 8px;
+    color: var(--teal);
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 600;
+    font-size: 0.82rem;
+    cursor: pointer;
+  }
+  .clone-voice-trigger:hover{ background: rgba(43,224,196,0.22); }
+  .clone-voice-trigger svg{ width: 14px; height: 14px; flex-shrink: 0; }
+
+  .voice-item-custom-tag{
+    font-size: 0.6rem;
+    color: var(--teal);
+    border: 1px solid rgba(43,224,196,0.35);
+    border-radius: 4px;
+    padding: 1px 5px;
+    margin-left: 6px;
+    text-transform: uppercase;
+  }
+
+  .clone-modal-overlay{
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(2,3,8,0.72);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+  .clone-modal-overlay.show{ opacity: 1; pointer-events: auto; }
+  .clone-modal{
+    width: min(420px, 100%);
+    background: rgba(7, 11, 22, 0.96);
+    backdrop-filter: blur(30px) saturate(180%);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 30px 70px rgba(0,0,0,0.6), inset 0 1px 0 var(--glass-highlight);
+    transform: translateY(12px) scale(0.98);
+    transition: transform 0.25s ease;
+  }
+  .clone-modal-overlay.show .clone-modal{ transform: translateY(0) scale(1); }
+  .clone-modal-head{ display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+  .clone-modal-head h3{ font-family: 'Bricolage Grotesque', sans-serif; font-size: 1.1rem; }
+  .clone-modal-close{ background: none; border: none; color: var(--text-muted); font-size: 1.5rem; line-height: 1; cursor: pointer; }
+  .clone-modal-close:hover{ color: var(--teal); }
+  .clone-modal .field{ margin-bottom: 16px; }
+  .clone-input{
+    width: 100%;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    padding: 11px 12px;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.88rem;
+    outline: none;
     transition: border-color 0.2s ease;
   }
-  select:focus{ border-color: var(--teal); }
-  select option{ background: #0D1730; color: var(--text); }
-
-  .slider-row{
-    display: flex; align-items: center; gap: 10px;
+  .clone-input:focus{ border-color: var(--teal); }
+  .clone-file-input{
+    width: 100%;
+    color: var(--text-muted);
+    font-size: 0.8rem;
   }
+
+  @media (max-width: 640px){
+    .voice-panel{ width: min(300px, 88vw); }
+  }
+
+  .slider-row{ display: flex; align-items: center; gap: 10px; }
   input[type="range"]{
     flex: 1;
     -webkit-appearance: none;
@@ -262,36 +459,67 @@
 
     <div class="controls-grid">
       <div class="field">
-        <label for="voiceSelect">Character / Voice</label>
-        <select id="voiceSelect">
-          <option value="">Loading voices...</option>
-        </select>
+        <label>Character / Voice</label>
+        <div class="tts-dropdown" id="voiceDropdown">
+          <button class="tts-dropdown-btn" type="button" id="voiceDropdownBtn">
+            <span id="voiceSelectedLabel">Loading voices...</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="voice-panel" id="voicePanel">
+            <div class="voice-panel-scroll">
+              <div class="voice-panel-title">Choose a character</div>
+              <button type="button" class="clone-voice-trigger" id="cloneVoiceTrigger">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                Clone your voice
+              </button>
+              <div id="voiceList"></div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="field">
-        <label for="modelSelect">Model</label>
-        <select id="modelSelect">
-          <option value="inworld-tts-2">Inworld TTS-2 (Premium, most expressive)</option>
-          <option value="inworld-tts-1">Inworld TTS-1 (Faster)</option>
-        </select>
+        <label>Model</label>
+        <div class="tts-dropdown" id="modelDropdown">
+          <button class="tts-dropdown-btn" type="button" id="modelDropdownBtn">
+            <span id="modelSelectedLabel">Inworld TTS-2</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="tts-dropdown-menu">
+            <button type="button" class="tts-dropdown-item active" data-value="inworld-tts-2" data-label="Inworld TTS-2">Inworld TTS-2<span class="tts-item-sub">Premium, most expressive</span></button>
+            <button type="button" class="tts-dropdown-item" data-value="inworld-tts-1" data-label="Inworld TTS-1">Inworld TTS-1<span class="tts-item-sub">Faster</span></button>
+          </div>
+        </div>
       </div>
 
       <div class="field">
-        <label for="styleSelect">Style / Expressiveness</label>
-        <select id="styleSelect">
-          <option value="STABLE">Stable — calm & consistent</option>
-          <option value="BALANCED" selected>Balanced — natural default</option>
-          <option value="CREATIVE">Creative — more expressive</option>
-        </select>
+        <label>Style / Expressiveness</label>
+        <div class="tts-dropdown" id="styleDropdown">
+          <button class="tts-dropdown-btn" type="button" id="styleDropdownBtn">
+            <span id="styleSelectedLabel">Balanced</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="tts-dropdown-menu">
+            <button type="button" class="tts-dropdown-item" data-value="STABLE" data-label="Stable">Stable<span class="tts-item-sub">Calm & consistent</span></button>
+            <button type="button" class="tts-dropdown-item active" data-value="BALANCED" data-label="Balanced">Balanced<span class="tts-item-sub">Natural default</span></button>
+            <button type="button" class="tts-dropdown-item" data-value="CREATIVE" data-label="Creative">Creative<span class="tts-item-sub">More expressive</span></button>
+          </div>
+        </div>
       </div>
 
       <div class="field">
-        <label for="formatSelect">Audio Format</label>
-        <select id="formatSelect">
-          <option value="MP3" selected>MP3</option>
-          <option value="WAV">WAV</option>
-          <option value="OGG_OPUS">OGG</option>
-        </select>
+        <label>Audio Format</label>
+        <div class="tts-dropdown" id="formatDropdown">
+          <button class="tts-dropdown-btn" type="button" id="formatDropdownBtn">
+            <span id="formatSelectedLabel">MP3</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="tts-dropdown-menu">
+            <button type="button" class="tts-dropdown-item active" data-value="MP3" data-label="MP3">MP3</button>
+            <button type="button" class="tts-dropdown-item" data-value="WAV" data-label="WAV">WAV</button>
+            <button type="button" class="tts-dropdown-item" data-value="OGG_OPUS" data-label="OGG">OGG</button>
+          </div>
+        </div>
       </div>
 
       <div class="field" style="grid-column: 1 / -1;">
@@ -324,13 +552,36 @@
 
 <footer>© 2026 Megladon AI. Built for speed.</footer>
 
+<div class="clone-modal-overlay" id="cloneModalOverlay">
+  <div class="clone-modal">
+    <div class="clone-modal-head">
+      <h3>Clone Your Voice</h3>
+      <button type="button" class="clone-modal-close" id="cloneModalClose">&times;</button>
+    </div>
+    <div class="field">
+      <label>Voice Name</label>
+      <input type="text" id="cloneNameInput" class="clone-input" placeholder="e.g. My Voice">
+    </div>
+    <div class="field">
+      <label>Audio Sample</label>
+      <input type="file" id="cloneFileInput" class="clone-file-input" accept="audio/*">
+      <div class="hint">5–15 seconds of clear speech. WAV, MP3, or WEBM. Max 4MB.</div>
+    </div>
+    <div class="row" style="margin-top:4px;">
+      <button class="btn-primary" id="cloneSubmitBtn">Clone Voice</button>
+      <button class="btn-secondary" id="cloneCancelBtn">Cancel</button>
+    </div>
+    <div class="status" id="cloneStatus">
+      <div class="spinner"></div>
+      <span>Cloning your voice, please wait...</span>
+    </div>
+    <div class="error-box" id="cloneErrorBox"></div>
+  </div>
+</div>
+
 <script>
   const textInput = document.getElementById('textInput');
   const charCount = document.getElementById('charCount');
-  const voiceSelect = document.getElementById('voiceSelect');
-  const modelSelect = document.getElementById('modelSelect');
-  const styleSelect = document.getElementById('styleSelect');
-  const formatSelect = document.getElementById('formatSelect');
   const speedSlider = document.getElementById('speedSlider');
   const speedVal = document.getElementById('speedVal');
   const generateBtn = document.getElementById('generateBtn');
@@ -341,10 +592,26 @@
   const resultAudio = document.getElementById('resultAudio');
   const downloadBtn = document.getElementById('downloadBtn');
 
-  const FALLBACK_VOICES = ['Sarah', 'Dennis', 'Alex', 'Olivia', 'Ashley'];
-
+  const FALLBACK_VOICES = [
+    'Sarah', 'Dennis', 'Alex', 'Ashley', 'Olivia', 'Mark', 'Julia', 'Edward',
+    'Elizabeth', 'Priya', 'Theodore', 'Timothy', 'Wendy', 'Craig', 'Deborah',
+    'Ronald', 'Shaun', 'Brian', 'Amina', 'Derek', 'Evan', 'Kayla', 'Jake',
+    'Marcus', 'Mia', 'Naomi', 'Levi', 'Avery', 'Brandon', 'Victoria'
+  ];
   const FORMAT_EXT = { MP3: 'mp3', WAV: 'wav', OGG_OPUS: 'ogg' };
   const FORMAT_MIME = { MP3: 'audio/mpeg', WAV: 'audio/wav', OGG_OPUS: 'audio/ogg' };
+
+  const playIcon = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+  const stopIcon = '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>';
+
+  // ---- state ----
+  let selectedVoice = '';
+  let selectedModel = 'inworld-tts-2';
+  let selectedStyle = 'BALANCED';
+  let selectedFormat = 'MP3';
+  const previewCache = {};
+  let currentPreviewAudio = null;
+  let currentPreviewBtn = null;
 
   textInput.addEventListener('input', () => {
     const len = textInput.value.length;
@@ -356,13 +623,184 @@
     speedVal.textContent = Number(speedSlider.value).toFixed(2) + 'x';
   });
 
-  function populateVoices(list){
-    voiceSelect.innerHTML = '';
-    list.forEach(name => {
-      const opt = document.createElement('option');
-      opt.value = name;
-      opt.textContent = name;
-      voiceSelect.appendChild(opt);
+  // ---------- Generic themed dropdowns (model / style / format) ----------
+  function setupSimpleDropdown(dropdownId, labelId, onSelect){
+    const dropdown = document.getElementById(dropdownId);
+    const btn = dropdown.querySelector('.tts-dropdown-btn');
+    const label = document.getElementById(labelId);
+    const items = dropdown.querySelectorAll('.tts-dropdown-item');
+
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeAllDropdowns(dropdown);
+      dropdown.classList.toggle('open');
+    });
+
+    items.forEach(item => {
+      item.addEventListener('click', () => {
+        items.forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+        label.textContent = item.dataset.label;
+        onSelect(item.dataset.value);
+        dropdown.classList.remove('open');
+      });
+    });
+  }
+
+  function closeAllDropdowns(except){
+    document.querySelectorAll('.tts-dropdown.open').forEach(d => {
+      if (d !== except) d.classList.remove('open');
+    });
+  }
+
+  document.addEventListener('click', (e) => {
+    document.querySelectorAll('.tts-dropdown').forEach(d => {
+      if (!d.contains(e.target)) d.classList.remove('open');
+    });
+  });
+
+  setupSimpleDropdown('modelDropdown', 'modelSelectedLabel', (v) => { selectedModel = v; });
+  setupSimpleDropdown('styleDropdown', 'styleSelectedLabel', (v) => { selectedStyle = v; });
+  setupSimpleDropdown('formatDropdown', 'formatSelectedLabel', (v) => { selectedFormat = v; });
+
+  // ---------- Voice / character dropdown (with live preview) ----------
+  const voiceDropdown = document.getElementById('voiceDropdown');
+  const voiceDropdownBtn = document.getElementById('voiceDropdownBtn');
+  const voiceSelectedLabel = document.getElementById('voiceSelectedLabel');
+  const voicePanel = document.getElementById('voicePanel');
+  const voiceList = document.getElementById('voiceList');
+
+  voiceDropdownBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    closeAllDropdowns();
+    const isOpen = voicePanel.classList.contains('show');
+    if (!isOpen){
+      positionVoicePanel();
+    }
+    voicePanel.classList.toggle('show', !isOpen);
+    voiceDropdown.classList.toggle('open', !isOpen);
+  });
+
+  function positionVoicePanel(){
+    const btnRect = voiceDropdownBtn.getBoundingClientRect();
+    const panelWidth = voicePanel.offsetWidth || 300;
+    const panelHeight = voicePanel.offsetHeight || 400;
+    const gap = 16;
+    const margin = 12;
+
+    // Always try to sit in the left gutter, next to the trigger
+    let left = btnRect.left - panelWidth - gap;
+    if (left < margin) left = margin; // clamp to viewport edge instead of jumping elsewhere
+
+    let top = btnRect.top;
+    const maxTop = window.innerHeight - panelHeight - margin;
+    if (top > maxTop) top = Math.max(margin, maxTop);
+
+    voicePanel.style.left = left + 'px';
+    voicePanel.style.top = top + 'px';
+  }
+
+  window.addEventListener('resize', () => {
+    if (voicePanel.classList.contains('show')) positionVoicePanel();
+  });
+  document.addEventListener('click', (e) => {
+    if (!voiceDropdown.contains(e.target)){
+      voicePanel.classList.remove('show');
+      voiceDropdown.classList.remove('open');
+    }
+  });
+
+  function buildVoiceItem(name, isCustom){
+    const item = document.createElement('div');
+    item.className = 'voice-item';
+    item.innerHTML = `
+      <span class="voice-item-name">${name}${isCustom ? '<span class="voice-item-custom-tag">Custom</span>' : ''}</span>
+      <button type="button" class="voice-preview-btn" title="Preview ${name}'s voice">
+        <span class="mini-spinner"></span>
+        ${playIcon}
+      </button>
+    `;
+    item.querySelector('.voice-item-name').addEventListener('click', () => selectVoice(name, item));
+    item.querySelector('.voice-preview-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      previewVoice(name, e.currentTarget);
+    });
+    return item;
+  }
+
+  function renderVoiceList(names){
+    voiceList.innerHTML = '';
+    names.forEach((name, idx) => {
+      const item = buildVoiceItem(name, false);
+      if (idx === 0) item.classList.add('active');
+      voiceList.appendChild(item);
+    });
+    if (names.length){
+      selectVoice(names[0], voiceList.querySelector('.voice-item'));
+    }
+  }
+
+  function selectVoice(name, itemEl){
+    selectedVoice = name;
+    voiceSelectedLabel.textContent = name;
+    voiceList.querySelectorAll('.voice-item').forEach(i => i.classList.remove('active'));
+    if (itemEl) itemEl.classList.add('active');
+    voicePanel.classList.remove('show');
+    voiceDropdown.classList.remove('open');
+  }
+
+  async function previewVoice(name, btnEl){
+    // stop any currently playing preview
+    if (currentPreviewAudio){
+      currentPreviewAudio.pause();
+      if (currentPreviewBtn) currentPreviewBtn.classList.remove('playing');
+      const wasSame = currentPreviewBtn === btnEl;
+      currentPreviewAudio = null;
+      currentPreviewBtn = null;
+      if (wasSame) return; // clicking the same playing preview again just stops it
+    }
+
+    if (previewCache[name]){
+      playPreviewAudio(previewCache[name], btnEl);
+      return;
+    }
+
+    btnEl.classList.add('loading');
+    try {
+      const res = await fetch('/.netlify/functions/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: `Hi, I'm ${name}. This is a quick voice preview.`,
+          voiceId: name,
+          modelId: 'inworld-tts-2',
+          deliveryMode: 'BALANCED',
+          audioEncoding: 'MP3',
+          speakingRate: 1.0,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Preview failed');
+      const src = `data:audio/mpeg;base64,${data.audioContent}`;
+      previewCache[name] = src;
+      playPreviewAudio(src, btnEl);
+    } catch (err){
+      showError(err.message || 'Could not load voice preview.');
+    } finally {
+      btnEl.classList.remove('loading');
+    }
+  }
+
+  function playPreviewAudio(src, btnEl){
+    const audio = new Audio(src);
+    currentPreviewAudio = audio;
+    currentPreviewBtn = btnEl;
+    btnEl.classList.add('playing');
+    audio.play();
+    audio.addEventListener('ended', () => {
+      btnEl.classList.remove('playing');
+      currentPreviewAudio = null;
+      currentPreviewBtn = null;
     });
   }
 
@@ -372,20 +810,21 @@
       if (!res.ok) throw new Error('voices fetch failed');
       const data = await res.json();
       const rawList = data.voices || data.data || data.items || [];
-      const names = rawList
-        .map(v => v.voiceId || v.id || v.name)
-        .filter(Boolean);
-      if (names.length){
-        populateVoices(names);
-      } else {
-        populateVoices(FALLBACK_VOICES);
-      }
+      const names = rawList.map(v => v.voiceId || v.id || v.name).filter(Boolean);
+      // The live "list voices" endpoint is deprecated and often returns only
+      // a handful of results — fall back to the curated list unless the API
+      // genuinely gives us a fuller catalog.
+      const merged = names.length > FALLBACK_VOICES.length
+        ? Array.from(new Set([...names, ...FALLBACK_VOICES]))
+        : FALLBACK_VOICES;
+      renderVoiceList(merged);
     } catch (e) {
-      populateVoices(FALLBACK_VOICES);
+      renderVoiceList(FALLBACK_VOICES);
     }
   }
   loadVoices();
 
+  // ---------- Generation ----------
   function showError(message){
     errorBox.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><span></span>';
     errorBox.querySelector('span').textContent = message;
@@ -406,30 +845,25 @@
     statusBox.classList.add('show');
     resultWrap.classList.remove('show');
 
-    const audioEncoding = formatSelect.value;
-
     try {
       const res = await fetch('/.netlify/functions/tts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           text,
-          voiceId: voiceSelect.value,
-          modelId: modelSelect.value,
-          deliveryMode: styleSelect.value,
-          audioEncoding,
+          voiceId: selectedVoice,
+          modelId: selectedModel,
+          deliveryMode: selectedStyle,
+          audioEncoding: selectedFormat,
           speakingRate: Number(speedSlider.value),
         }),
       });
 
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Something went wrong. Please try again.');
 
-      if (!res.ok){
-        throw new Error(data.error || 'Something went wrong. Please try again.');
-      }
-
-      const mime = FORMAT_MIME[audioEncoding] || 'audio/mpeg';
-      const ext = FORMAT_EXT[audioEncoding] || 'mp3';
+      const mime = FORMAT_MIME[selectedFormat] || 'audio/mpeg';
+      const ext = FORMAT_EXT[selectedFormat] || 'mp3';
       const src = `data:${mime};base64,${data.audioContent}`;
 
       resultAudio.src = src;
@@ -451,6 +885,86 @@
     charCount.classList.remove('warn');
     resultWrap.classList.remove('show');
     errorBox.classList.remove('show');
+  });
+
+  // ---------- Voice cloning ----------
+  const cloneVoiceTrigger = document.getElementById('cloneVoiceTrigger');
+  const cloneModalOverlay = document.getElementById('cloneModalOverlay');
+  const cloneModalClose = document.getElementById('cloneModalClose');
+  const cloneCancelBtn = document.getElementById('cloneCancelBtn');
+  const cloneNameInput = document.getElementById('cloneNameInput');
+  const cloneFileInput = document.getElementById('cloneFileInput');
+  const cloneSubmitBtn = document.getElementById('cloneSubmitBtn');
+  const cloneStatus = document.getElementById('cloneStatus');
+  const cloneErrorBox = document.getElementById('cloneErrorBox');
+
+  function openCloneModal(){
+    cloneModalOverlay.classList.add('show');
+    voicePanel.classList.remove('show');
+    voiceDropdown.classList.remove('open');
+  }
+  function closeCloneModal(){
+    cloneModalOverlay.classList.remove('show');
+    cloneErrorBox.classList.remove('show');
+    cloneErrorBox.innerHTML = '';
+    cloneStatus.classList.remove('show');
+  }
+  cloneVoiceTrigger.addEventListener('click', (e) => { e.stopPropagation(); openCloneModal(); });
+  cloneModalClose.addEventListener('click', closeCloneModal);
+  cloneCancelBtn.addEventListener('click', closeCloneModal);
+  cloneModalOverlay.addEventListener('click', (e) => { if (e.target === cloneModalOverlay) closeCloneModal(); });
+
+  function showCloneError(message){
+    cloneErrorBox.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><span></span>';
+    cloneErrorBox.querySelector('span').textContent = message;
+    cloneErrorBox.classList.add('show');
+  }
+
+  function fileToBase64(file){
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  cloneSubmitBtn.addEventListener('click', async () => {
+    const name = cloneNameInput.value.trim();
+    const file = cloneFileInput.files[0];
+    cloneErrorBox.classList.remove('show');
+
+    if (!name){ showCloneError('Please enter a name for this voice.'); return; }
+    if (!file){ showCloneError('Please choose an audio sample.'); return; }
+    if (file.size > 4 * 1024 * 1024){ showCloneError('Audio file must be under 4MB.'); return; }
+
+    cloneSubmitBtn.disabled = true;
+    cloneStatus.classList.add('show');
+
+    try {
+      const audioBase64 = await fileToBase64(file);
+      const res = await fetch('/.netlify/functions/clone-voice', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ displayName: name, langCode: 'en', audioBase64 }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Voice cloning failed.');
+
+      const newVoiceId = data.voiceId || name;
+      const item = buildVoiceItem(newVoiceId, true);
+      voiceList.prepend(item);
+      selectVoice(newVoiceId, item);
+
+      cloneNameInput.value = '';
+      cloneFileInput.value = '';
+      closeCloneModal();
+    } catch (err){
+      showCloneError(err.message || 'Something went wrong. Please try again.');
+    } finally {
+      cloneSubmitBtn.disabled = false;
+      cloneStatus.classList.remove('show');
+    }
   });
 </script>
 
